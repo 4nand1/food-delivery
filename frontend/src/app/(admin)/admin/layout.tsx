@@ -7,7 +7,7 @@ type AdminLayoutProps = {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
-    <div className="min-h-screen bg-neutral-950 text-white">
+    <div className="min-h-screen ">
       <AdminShell>{children}</AdminShell>
     </div>
   );

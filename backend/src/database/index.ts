@@ -1,5 +1,5 @@
 import { connect } from 'mongoose'
 
 export const connectToDatabase = async () => {
-    await connect('mongodb+srv://Anand:1yvPRY9lzNwu6zzt@clister1.pqsj91j.mongodb.net/?appName=Cluster1')
+    await connect('mongodb+srv://Anand:UlD2N3PzC2jydjth@cluster1.evz3dmj.mongodb.net/?appName=Cluster1')
 }
