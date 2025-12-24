@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { AdminOrder, DeliveryState } from "../types";
+import type { AdminOrder, DeliveryState } from "@/app/_components/admin/types";
+
 import DeliveryStateBadge from "./DeliveryStateBadge";
 import ChangeDeliveryStateDialog from "./ChangeDeliveryStateDialog";
 import { Button } from "@/components/ui/button";

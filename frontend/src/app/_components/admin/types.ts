@@ -10,7 +10,7 @@ export type AdminOrder = {
   id: string;
   customerEmail: string;
   items: AdminOrderItem[];
-  date: string; // ISO or display-ready
+  date: string;
   total: number;
   deliveryAddress: string;
   deliveryState: DeliveryState;

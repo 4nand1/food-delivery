@@ -1,10 +1,12 @@
+export type FoodCategory = "appetizers" | "salads" | "lunch";
+
 export type FoodItem = {
   id: string;
   title: string;
   price: number;
   desc: string;
   image: string;
-  category: "appetizers" | "salads" | "lunch";
+  category: FoodCategory;
 };
 
 export const foods: FoodItem[] = [

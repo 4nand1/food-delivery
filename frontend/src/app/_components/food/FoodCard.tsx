@@ -3,22 +3,14 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import type { FoodItem } from "@/app/_mock/foods";
 
-export type FoodItem = {
-  id: string;
-  title: string;
-  price: number;
-  desc: string;
-  image: string;
-};
-
-export default function FoodCard({
-  item,
-  onAddClick,
-}: {
+type FoodCardProps = {
   item?: FoodItem;
   onAddClick?: (item: FoodItem) => void;
-}) {
+};
+
+export default function FoodCard({ item, onAddClick }: FoodCardProps) {
   if (!item?.id) return null;
 
   const title = item.title ?? "Untitled";

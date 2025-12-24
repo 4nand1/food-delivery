@@ -1,4 +1,4 @@
-import type { DeliveryState } from "./types";
+import type { DeliveryState } from "../types";
 import { cn } from "@/lib/utils";
 
 type DeliveryStateBadgeProps = {

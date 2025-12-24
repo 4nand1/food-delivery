@@ -3,7 +3,7 @@
 import { useState } from "react";
 import OrdersTable from "@/app/_components/admin/orders/OrdersTable";
 import { mockOrders } from "@/app/_components/admin/orders/mockOrders";
-import type { AdminOrder, DeliveryState } from "@/app/_components/admin/orders/types";
+import type { AdminOrder, DeliveryState } from "@/app/_components/admin/types";
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<AdminOrder[]>(mockOrders);

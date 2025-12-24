@@ -1,4 +1,4 @@
-import type { AdminOrder } from "./types";
+import type { AdminOrder } from "../types";
 
 export const mockOrders: AdminOrder[] = [
   {
