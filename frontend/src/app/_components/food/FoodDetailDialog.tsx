@@ -5,7 +5,9 @@ import Image from "next/image";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import QuantityControl from "./QuantityControl";
-import { useCartStore } from "@/app/store/cart.store";
+import { useCart } from "@/app/_components/cart/CartProvider";
+
+
 import type { FoodItem } from "./FoodCard";
 
 export default function FoodDetailDialog({
@@ -17,7 +19,8 @@ export default function FoodDetailDialog({
   onOpenChange: (v: boolean) => void;
   item?: FoodItem;
 }) {
-  const addItem = useCartStore((s) => s.addItem);
+  const { addToCart, setIsCartOpen } = useCart();
+
   const [qty, setQty] = useState(1);
 
   const canRender = Boolean(item?.id);
