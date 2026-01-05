@@ -3,11 +3,10 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, Trash2 } from "lucide-react";
-import { useCartStore, type CartItem as CartItemType } from "@/app/store/cart.store";
+
 
 export default function CartItem({ item }: { item: CartItemType }) {
-  const removeItem = useCartStore((s) => s.removeItem);
-  const setQty = useCartStore((s) => s.setQty);
+  
 
   const title = item?.title ?? "Untitled";
   const imageSrc = item?.image?.trim() ? item.image : "/placeholder-food.png";

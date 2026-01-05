@@ -4,36 +4,38 @@ import Link from "next/link";
 import { ShoppingCart, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DeliveryAddressDialog from "./DeliveryAddressDialog";
-import CartSheet from "@/app/_components/cart/CartSheet";
 import { useCart } from "@/app/_components/cart/CartProvider";
 
 export default function Header() {
-  const { count } = useCart();
+  const { setIsCartOpen, count } = useCart();
+  c
 
   return (
     <header className="w-full bg-zinc-900">
-      <div className="mx-auto h-14 px-4 flex items-center justify-between">
-        <Link href="/">
-          <img src="Logo Container.png" alt="Logo" />
+      <div className="mx-auto flex h-14 items-center justify-between px-4">
+        <Link href="/" className="flex items-center">
+          <img src="/Logo Container.png" alt="Logo" className="h-8 w-auto" />
         </Link>
 
         <div className="flex items-center gap-2">
           <DeliveryAddressDialog />
 
-          {/* ✅ Cart sheet trigger */}
-          <CartSheet>
-            <Button variant="ghost" size="icon" className="relative">
-              <ShoppingCart className="h-5 w-5 text-white" />
+          {/* CART */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative text-white"
+            onClick={() => setIsCartOpen(true)}
+          >
+            <ShoppingCart className="h-5 w-5" />
+            {count > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-5 rounded-full bg-red-500 px-1 text-[10px] leading-5 text-white">
+                {count}
+              </span>
+            )}
+          </Button>
 
-              {/* badge (UI only) */}
-              {count > 0 && (
-                <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-[#ff4b2b] px-1 text-[10px] font-bold text-white">
-                  {count}
-                </span>
-              )}
-            </Button>
-          </CartSheet>
-
+          {/* USER */}
           <Button variant="ghost" size="icon" className="text-white">
             <User className="h-5 w-5" />
           </Button>

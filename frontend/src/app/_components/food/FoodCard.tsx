@@ -25,7 +25,9 @@ export default function FoodCard({ item }: { item: Item }) {
           type="button"
           size="icon"
           variant="secondary"
-          onClick={() => addToCart(item)}
+          onClick={() => addToCart(item)
+            
+          }
           className="absolute right-3 top-3 h-7 w-7 rounded-full bg-white hover:bg-white"
         >
           <Plus className="h-4 w-4 text-zinc-900" />
