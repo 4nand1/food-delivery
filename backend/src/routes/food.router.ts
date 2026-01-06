@@ -4,8 +4,9 @@ import { getFoods } from "../controllers/food/get-foods.js";
 
 const FoodRouter = Router();
 
-FoodRouter.post('/', createFood);
-FoodRouter.get('/', getFoods);
+FoodRouter.get('/', createFood).post('/', getFoods);
+
+
 
 export { FoodRouter };
 

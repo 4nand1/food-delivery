@@ -1,11 +1,12 @@
 import { Schema, model } from 'mongoose';
 
 const userChema = new Schema({
-    username: { type: String, required: true },
+    username: { type: String, required: true, unique: true},
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     profileImage: { type: String, required: false },
-    adress:
+    adress: { type: String, required: false },
+    phone: { type: String, required: false },
    
     
 }, {
