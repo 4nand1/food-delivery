@@ -1,2 +1,2 @@
-export * from "./get-category.js";
+export * from "./get-categories.js";
 export * from "./create-category.js";

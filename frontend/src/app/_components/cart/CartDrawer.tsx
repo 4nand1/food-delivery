@@ -1,8 +1,13 @@
 "use client";
 
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { useCart } from "./CartProvider";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import CartPanel from "./CartPanel";
+import { useCart } from "@/context/cart-context";
 
 export default function CartDrawer() {
   const { isCartOpen, setIsCartOpen } = useCart();
@@ -19,4 +24,5 @@ export default function CartDrawer() {
         <CartPanel />
       </SheetContent>
     </Sheet>
-  
+  );
+}

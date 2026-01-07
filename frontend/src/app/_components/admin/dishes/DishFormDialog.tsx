@@ -1,136 +1,164 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import type { Dish, DishCategory } from "./types";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import type { Dish } from "./types";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-type DishFormPayload = {
+type DishDraft = {
   title: string;
-  price: number;
+  price: string; // input string байдаг
   ingredients: string;
   imageUrl: string;
   categoryId: string;
 };
 
-type DishFormDialogProps = {
+type Props = {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
-
+  onOpenChange: (v: boolean) => void;
   mode: "create" | "edit";
-  initialDish?: Dish;
-
-  onSubmit?: (payload: DishFormPayload) => void;
+  categories: DishCategory[];
+  initialDish?: Dish | null;
+  onSubmit: (payload: {
+    title: string;
+    price: number;
+    ingredients: string;
+    imageUrl?: string;
+    categoryId: string;
+  }) => void;
 };
 
 export default function DishFormDialog({
   open,
   onOpenChange,
   mode,
+  categories,
   initialDish,
   onSubmit,
-}: DishFormDialogProps) {
-  const [title, setTitle] = useState<string>("");
-  const [price, setPrice] = useState<string>("12.99");
-  const [ingredients, setIngredients] = useState<string>("");
-  const [imageUrl, setImageUrl] = useState<string>("");
-  const [categoryId, setCategoryId] = useState<string>("appetizers");
+}: Props) {
+  const [draft, setDraft] = useState<DishDraft>({
+    title: "",
+    price: "",
+    ingredients: "",
+    imageUrl: "",
+    categoryId: categories.find((c) => c.id !== "all")?.id ?? "all",
+  });
 
+  // dialog нээгдэх бүрт edit үед existing dish-ийг form руу хийж өгнө
   useEffect(() => {
+    if (!open) return;
+
     if (mode === "edit" && initialDish) {
-      setTitle(initialDish.title ?? "");
-      setPrice(String(initialDish.price ?? 0));
-      setIngredients(initialDish.ingredients ?? "");
-      setImageUrl(initialDish.imageUrl ?? "");
-      setCategoryId(initialDish.categoryId ?? "appetizers");
-    } else {
-      setTitle("");
-      setPrice("12.99");
-      setIngredients("");
-      setImageUrl("");
-      setCategoryId("appetizers");
+      setDraft({
+        title: initialDish.title ?? "",
+        price: String(initialDish.price ?? ""),
+        ingredients: initialDish.ingredients ?? "",
+        imageUrl: initialDish.imageUrl ?? "",
+        categoryId: initialDish.categoryId ?? "all",
+      });
+      return;
     }
-  }, [mode, initialDish, open]);
 
-  const handleClose = (nextOpen: boolean) => {
-    onOpenChange(nextOpen);
+    // create үед form цэвэр
+    setDraft({
+      title: "",
+      price: "",
+      ingredients: "",
+      imageUrl: "",
+      categoryId: categories.find((c) => c.id !== "all")?.id ?? "all",
+    });
+  }, [open, mode, initialDish, categories]);
+
+  const titleText = mode === "create" ? "Add new dish" : "Edit dish";
+
+  const handleSave = () => {
+    const priceNum = Number(draft.price);
+    const safePrice = Number.isFinite(priceNum) ? priceNum : 0;
+
+    onSubmit({
+      title: draft.title.trim() || "Untitled",
+      price: safePrice,
+      ingredients: draft.ingredients.trim(),
+      imageUrl: draft.imageUrl.trim() ? draft.imageUrl.trim() : undefined,
+      categoryId: draft.categoryId,
+    });
+
+    onOpenChange(false);
   };
-
-  const handleSubmit = () => {
-    const safeTitle = title.trim();
-    const numericPrice = Number(price);
-
-    if (!safeTitle) return;
-
-    const payload: DishFormPayload = {
-      title: safeTitle,
-      price: Number.isFinite(numericPrice) ? numericPrice : 0,
-      ingredients: ingredients.trim(),
-      imageUrl: imageUrl.trim(),
-      categoryId: categoryId.trim() || "appetizers",
-    };
-
-    onSubmit?.(payload);
-    handleClose(false);
-  };
-
-  const heading = mode === "edit" ? "Edit dish" : "Add new dish";
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[520px]">
         <DialogHeader>
-          <DialogTitle>{heading}</DialogTitle>
+          <DialogTitle>{titleText}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-3">
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1">
-              <p className="text-xs text-neutral-600">Dish title</p>
-              <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Dish name" />
-            </div>
-
-            <div className="space-y-1">
-              <p className="text-xs text-neutral-600">Price</p>
-              <Input value={price} onChange={(e) => setPrice(e.target.value)} placeholder="12.99" />
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            <p className="text-xs text-neutral-600">Ingredients</p>
-            <Input
-              value={ingredients}
-              onChange={(e) => setIngredients(e.target.value)}
-              placeholder="Short ingredients text"
+          <div className="grid gap-2">
+            <label className="text-xs font-medium text-neutral-700">Dish name</label>
+            <input
+              className="h-10 rounded-lg border px-3 text-sm"
+              value={draft.title}
+              onChange={(e) => setDraft((p) => ({ ...p, title: e.target.value }))}
+              placeholder="Type dish name"
             />
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1">
-              <p className="text-xs text-neutral-600">Image URL (optional)</p>
-              <Input
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="/food-1.png"
-              />
-            </div>
-
-            <div className="space-y-1">
-              <p className="text-xs text-neutral-600">Category ID</p>
-              <Input
-                value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
-                placeholder="appetizers"
-              />
-            </div>
+          <div className="grid gap-2">
+            <label className="text-xs font-medium text-neutral-700">Dish price</label>
+            <input
+              className="h-10 rounded-lg border px-3 text-sm"
+              value={draft.price}
+              onChange={(e) => setDraft((p) => ({ ...p, price: e.target.value }))}
+              placeholder="12.99"
+              inputMode="decimal"
+            />
           </div>
 
-          <div className="flex justify-end gap-2">
-            <Button variant="ghost" type="button" onClick={() => handleClose(false)}>
+          <div className="grid gap-2">
+            <label className="text-xs font-medium text-neutral-700">Category</label>
+            <select
+              className="h-10 rounded-lg border px-3 text-sm"
+              value={draft.categoryId}
+              onChange={(e) => setDraft((p) => ({ ...p, categoryId: e.target.value }))}
+            >
+              {categories
+                .filter((c) => c.id !== "all")
+                .map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+            </select>
+          </div>
+
+          <div className="grid gap-2">
+            <label className="text-xs font-medium text-neutral-700">Ingredients</label>
+            <textarea
+              className="min-h-[90px] rounded-lg border p-3 text-sm"
+              value={draft.ingredients}
+              onChange={(e) => setDraft((p) => ({ ...p, ingredients: e.target.value }))}
+              placeholder="List ingredients..."
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <label className="text-xs font-medium text-neutral-700">
+              Food image URL (optional)
+            </label>
+            <input
+              className="h-10 rounded-lg border px-3 text-sm"
+              value={draft.imageUrl}
+              onChange={(e) => setDraft((p) => ({ ...p, imageUrl: e.target.value }))}
+              placeholder="/food-1.png"
+            />
+          </div>
+
+          <div className="flex justify-end gap-2 pt-2">
+            <Button variant="secondary" type="button" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="button" onClick={handleSubmit} disabled={!title.trim()}>
+            <Button type="button" onClick={handleSave}>
               Save
             </Button>
           </div>

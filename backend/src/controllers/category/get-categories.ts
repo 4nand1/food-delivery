@@ -1,6 +1,6 @@
 import type { RequestHandler } from "express"
 import { FoodModel } from "../../database/schema/food.schema.js";
-import { CategoryModel } from "../../database/schema/category.schema.js";
+import { CategoryModel } from "../../database/schema/categories.schema.js";
 
 
 export const getCategory: RequestHandler = async (req, res) => {

@@ -1,38 +1,37 @@
 "use client";
 
 import type { DishCategory } from "./types";
+import { cn } from "@/lib/utils";
 
-type CategoryPillsProps = {
+type Props = {
   categories: DishCategory[];
   activeCategoryId: string;
-  onChange: (categoryId: string) => void;
+  onChange: (nextId: string) => void;
 };
 
 export default function CategoryPills({
   categories,
   activeCategoryId,
   onChange,
-}: CategoryPillsProps) {
-  if (!categories?.length) return null;
-
+}: Props) {
   return (
     <div className="flex flex-wrap gap-2">
       {categories.map((c) => {
-        const isActive = c?.id === activeCategoryId;
+        const active = c.id === activeCategoryId;
 
         return (
           <button
             key={c.id}
             type="button"
             onClick={() => onChange(c.id)}
-            className={[
+            className={cn(
               "rounded-full border px-3 py-1 text-xs transition",
-              isActive
+              active
                 ? "bg-neutral-900 text-white"
-                : "bg-white text-neutral-700 hover:bg-neutral-50",
-            ].join(" ")}
+                : "bg-white text-neutral-700 hover:bg-neutral-50"
+            )}
           >
-            {c?.name ?? "—"}
+            {c.name}
           </button>
         );
       })}

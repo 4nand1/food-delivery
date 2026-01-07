@@ -1,58 +1,53 @@
 "use client";
 
-import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-type CategoryFormDialogProps = {
+type Props = {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSubmit?: (name: string) => void;
+  onOpenChange: (v: boolean) => void;
+  onSubmit: (name: string) => void;
 };
 
-export default function CategoryFormDialog({
-  open,
-  onOpenChange,
-  onSubmit,
-}: CategoryFormDialogProps) {
+export default function CategoryFormDialog({ open, onOpenChange, onSubmit }: Props) {
   const [name, setName] = useState<string>("");
 
-  const handleClose = (nextOpen: boolean) => {
-    onOpenChange(nextOpen);
-    if (!nextOpen) setName("");
-  };
+  useEffect(() => {
+    if (open) setName("");
+  }, [open]);
 
-  const handleSubmit = () => {
-    const trimmed = name.trim();
-    if (!trimmed) return;
-    onSubmit?.(trimmed);
-    handleClose(false);
+  const handleSave = () => {
+    const next = name.trim();
+    if (!next) return;
+    onSubmit(next);
+    onOpenChange(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[420px]">
         <DialogHeader>
           <DialogTitle>Add new category</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-3">
-          <div className="space-y-1">
-            <p className="text-xs text-neutral-600">Category name</p>
-            <Input
+          <div className="grid gap-2">
+            <label className="text-xs font-medium text-neutral-700">Category name</label>
+            <input
+              className="h-10 rounded-lg border px-3 text-sm"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Pizzas"
+              placeholder="Type category name"
             />
           </div>
 
-          <div className="flex justify-end gap-2">
-            <Button variant="ghost" type="button" onClick={() => handleClose(false)}>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button variant="secondary" type="button" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="button" onClick={handleSubmit} disabled={!name.trim()}>
-              Add
+            <Button type="button" onClick={handleSave}>
+              Add category
             </Button>
           </div>
         </div>
