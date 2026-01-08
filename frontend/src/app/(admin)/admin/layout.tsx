@@ -1,14 +1,18 @@
-import type { ReactNode } from "react";
-import AdminShell from "@/app/_components/admin/AdminShell";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import React from "react";
+import { AppSidebar } from "./_components/AppSidebar";
 
-type AdminLayoutProps = {
-  children: ReactNode;
-};
-
-export default function AdminLayout({ children }: AdminLayoutProps) {
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <div className="min-h-screen ">
-      <AdminShell>{children}</AdminShell>
-    </div>
+    <>
+      <SidebarProvider>
+        <AppSidebar />
+        <main className="flex-1">{children}</main>
+      </SidebarProvider>{" "}
+    </>
   );
 }

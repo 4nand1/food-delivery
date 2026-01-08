@@ -1,15 +1,11 @@
-import type { RequestHandler } from "express"
-import { FoodModel } from "../../database/schema/food.schema.js";
-import { CategoryModel } from "../../database/schema/categories.schema.js";
+import type { RequestHandler } from "express";
+
+import { CategoryModel } from "../../database/schema/category.schema.js";
 
 
-export const createCategory: RequestHandler = async (req, res) => {
-    const body = req.body;
+export const createCategory: RequestHandler=async (req,res)=>{
+    const body=req.body;
 
-    const food = await FoodModel.create({
-    name: body.name,
-    });
-
-    res.status(201).json(food);
-
+    const category=await CategoryModel.insertMany(body );
+    res.status(201).json(category);
 }

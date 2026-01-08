@@ -1,30 +1,67 @@
-import Link from "next/link";
+"use client";
 
+import { useEffect, useState } from "react";
+import { FoodEditCard } from "./_components/FoodEditCard";
+import { Button } from "@/components/ui/button";
 
-export default function AdminHomePage() {
+import { api } from "@/lib/axios";
+import { CreateFoodDialog } from "./_components/CreateFood";
+
+type Food = {
+  _id: string;
+  name: string;
+  price: number;
+  ingredients: string;
+  imageUrl: string;
+  categoryId: [
+    {
+      _id: string;
+      name: string;
+    }
+  ];
+};
+
+export default function Home() {
+  const [foods, setFoods] = useState<Food[]>([]);
+
+  useEffect(() => {
+    const getData = async () => {
+      const { data } = await api.get<Food[]>("/foods");
+      setFoods(data);
+    };
+    getData();
+  }, []);
+
+  const onAddToCart = (food: Food) => {
+    console.log("Added to cart:", food);
+  };
+
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-semibold">Admin</h2>
-      <p className="text-sm text-neutral-600">
-        Choose a section to manage. (UI only)
-      </p>
+    <div className="min-h-screen bg-secondary p-8">
+      <div className="flex justify-end mb-4">
+        <Button variant="ghost" className="rounded-full">
+          <img src="/Container (7).png" alt="Logo" />
+        </Button>
+      </div>
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        <Link
-          href="/admin/orders"
-          className="rounded-2xl border border-neutral-200 bg-white p-4 hover:bg-neutral-50"
-        >
-          <p className="font-medium">Orders</p>
-          <p className="text-sm text-neutral-600">View and update delivery state</p>
-        </Link>
+      <div className="border rounded-lg bg-white p-5">
+        <p className="text-lg font-semibold mb-5">Appetizers</p>
 
-        <Link
-          href="/admin/dishes"
-          className="rounded-2xl border border-neutral-200 bg-white p-4 hover:bg-neutral-50"
-        >
-          <p className="font-medium">Food menu</p>
-          <p className="text-sm text-neutral-600">Add/edit dishes & categories</p>
-        </Link>
+        <div className="grid grid-cols-4 gap-5">
+          <CreateFoodDialog />
+
+          {foods.map((food) => (
+            <FoodEditCard
+              key={food._id}
+              food={food}
+              name={food.name}
+              price={food.price}
+              ingredients={food.ingredients}
+              imageUrl={food.imageUrl}
+              onAddToCart={onAddToCart}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
