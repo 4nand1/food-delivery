@@ -19,7 +19,7 @@ type Food = {
       name: string;
     }
   ];
-};
+};  
 
 export default function Home() {
   const [foods, setFoods] = useState<Food[]>([]);
