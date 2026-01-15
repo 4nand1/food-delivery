@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FoodEditCard } from "./_components/FoodEditCard";
 import { Button } from "@/components/ui/button";
 
 import { api } from "@/lib/axios";
-import { CreateFoodDialog } from "./_components/CreateFood";
+import { CategoriesFood } from "./_components/CategoriesFood";
+
 
 type Food = {
   _id: string;
@@ -19,7 +19,7 @@ type Food = {
       name: string;
     }
   ];
-};  
+};
 
 export default function Home() {
   const [foods, setFoods] = useState<Food[]>([]);
@@ -43,26 +43,8 @@ export default function Home() {
           <img src="/Container (7).png" alt="Logo" />
         </Button>
       </div>
-
-      <div className="border rounded-lg bg-white p-5">
-        <p className="text-lg font-semibold mb-5">Appetizers</p>
-
-        <div className="grid grid-cols-4 gap-5">
-          <CreateFoodDialog />
-
-          {foods.map((food) => (
-            <FoodEditCard
-              key={food._id}
-              food={food}
-              name={food.name}
-              price={food.price}
-              ingredients={food.ingredients}
-              imageUrl={food.imageUrl}
-              onAddToCart={onAddToCart}
-            />
-          ))}
-        </div>
-      </div>
+    <CategoriesFood/>
+      
     </div>
   );
 }
