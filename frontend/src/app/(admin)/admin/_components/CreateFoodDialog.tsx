@@ -46,7 +46,7 @@ const foodFormSchema = z.object({
       message: "Price must be a valid positive number.",
     }
   ),
-  imageUrl: z.string().min(1, {
+  image: z.string().min(1, {
     message: "Image is required.",
   }),
   ingredients: z.string().min(5, {
@@ -59,7 +59,7 @@ const foodFormSchema = z.object({
 
 type FoodFormValues = z.infer<typeof foodFormSchema>;
 
-type Category = {
+export type Category = {
   _id: string;
   name: string;
 };
@@ -77,7 +77,7 @@ export const CreateFoodDialog = () => {
       name: "",
       price: "",
       ingredients: "",
-      imageUrl: "",
+      image: "",
       categoryId: "",
     },
   });
@@ -108,7 +108,7 @@ export const CreateFoodDialog = () => {
 
       const blob = await response.json();
       setUploadedImageUrl(blob.url);
-      form.setValue("imageUrl", blob.url);
+      form.setValue("image", blob.url);
     } catch (error) {
       console.error("Upload failed:", error);
       alert("Upload failed. Please try again.");
@@ -119,18 +119,18 @@ export const CreateFoodDialog = () => {
 
   const removeImage = () => {
     setUploadedImageUrl("");
-    form.setValue("imageUrl", "");
+    form.setValue("image", "");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   };
 
   const onSubmit = async (values: FoodFormValues) => {
-    await api.post("/foods/create", {
+    await api.post("/foods", {
       name: values.name,
       price: parseFloat(values.price),
       ingredients: values.ingredients,
-      imageUrl: values.imageUrl,
+      image: values.image,
       categoryId: [values.categoryId],
     });
 
@@ -251,7 +251,7 @@ export const CreateFoodDialog = () => {
 
             <FormField
               control={form.control}
-              name="imageUrl"
+              name="image"
               render={() => (
                 <FormItem>
                   <FormLabel>Food image</FormLabel>

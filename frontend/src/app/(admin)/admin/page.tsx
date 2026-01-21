@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FoodEditCard } from "./_components/FoodEditCard";
+import { FoodEditCard } from "@/app/(admin)/admin/_components/FoodEditCard";
 import { Button } from "@/components/ui/button";
 
 import { api } from "@/lib/axios";

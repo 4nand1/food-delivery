@@ -1,88 +1,53 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Package } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
 
-import { LayoutDashboard, Truck } from "lucide-react";
-
-const items = [
-  {
-    title: "Food menu",
-    url: "/admin",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Orders",
-    url: "/admin/orders",
-    icon: Truck,
-  },
-];
-
-export function AppSidebar() {
+export function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <Sidebar collapsible="none" className="h-full bg-white border-r">
-      <SidebarHeader>
-        <Link href="/">
-          <div className="flex gap-4 justify-center items-center py-5">
-            <img src="/Logo.png" className="w-10 h-10" />
-            <div>
-              <p className="text-[18px] font-semibold">NomNom</p>
-              <p className="text-[12px] text-[#71717A]">Swift delivery</p>
-            </div>
-          </div>
+    <aside className="w-64 bg-white border-r border-gray-200 p-6">
+      <div className="flex items-center gap-2 mb-8">
+        <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
+          <Package className="w-6 h-6 text-white" />
+        </div>
+        <div>
+          <h1 className="font-bold text-lg">NomNom</h1>
+          <p className="text-xs text-gray-500">Swift delivery</p>
+        </div>
+      </div>
+
+      <nav className="space-y-2">
+        <Link href="/admin">
+          <Button
+            variant={pathname === "/admin" ? "default" : "ghost"}
+            className={
+              pathname === "/admin"
+                ? "w-full justify-start gap-2 bg-black text-white hover:bg-black/90"
+                : "w-full justify-start gap-2"
+            }
+          >
+            <Package className="w-4 h-4" />
+            Food menu
+          </Button>
         </Link>
-      </SidebarHeader>
-
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => {
-                const active = pathname === item.url;
-
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <Link
-                        href={item.url}
-                        className={`flex items-center gap-2 rounded-lg p-2 transition
-                          ${
-                            active
-                              ? "bg-black text-white"
-                              : "hover:bg-gray-100 text-gray-800"
-                          }`}
-                      >
-                        <item.icon
-                          className={`w-5 h-5 ${
-                            active ? "text-white" : "text-gray-700"
-                          }`}
-                        />
-                        <span className="font-medium">{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-
-      <SidebarFooter className="p-4 text-sm text-gray-500"></SidebarFooter>
-    </Sidebar>
+        <Link href="/admin/orders">
+          <Button
+            variant={pathname === "/admin/orders" ? "default" : "ghost"}
+            className={
+              pathname === "/admin/orders"
+                ? "w-full justify-start gap-2 bg-black text-white hover:bg-black/90"
+                : "w-full justify-start gap-2"
+            }
+          >
+            <Package className="w-4 h-4" />
+            Orders
+          </Button>
+        </Link>
+      </nav>
+    </aside>
   );
 }
