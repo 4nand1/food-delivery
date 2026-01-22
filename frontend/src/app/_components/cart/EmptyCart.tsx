@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export default function EmptyCart() {
+export  function EmptyCart() {
   return (
     <div className="rounded-2xl bg-zinc-900/40 p-8 text-center ring-1 ring-white/10">
       <p className="text-base font-semibold text-white">Your cart is empty</p>

@@ -1,138 +1,70 @@
-"use client";
+const menu = [
+  { id: 1, title: "Appetizers" },
+  { id: 2, title: "Salads" },
+  { id: 3, title: "Pizzas" },
+  { id: 4, title: "Lunch favorites" },
+  { id: 5, title: "Main dishes" },
+  { id: 6, title: "Side dish" },
+  { id: 7, title: "Brunch" },
+  { id: 8, title: "Desserts" },
+  { id: 9, title: "Beverages" },
+  { id: 10, title: "Fish & Sea foods" },
+];
 
-import Link from "next/link";
-import { Facebook, Instagram } from "lucide-react";
-
-export default function Footer() {
+export const Footer = () => {
   return (
-    <footer className="w-full bg-zinc-900">
-      {/* Top red stripe */}
-      <div className="w-full bg-[#ff4b2b]">
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="flex h-12 items-center overflow-hidden">
-            <div className="whitespace-nowrap text-sm font-semibold text-white">
-              <span className="mr-10">Fresh fast delivered</span>
-              <span className="mr-10">Fresh fast delivered</span>
-              <span className="mr-10">Fresh fast delivered</span>
-              <span className="mr-10">Fresh fast delivered</span>
-              <span className="mr-10">Fresh fast delivered</span>
+    <div className="w-screen h-188.75 flex flex-col gap-19 bg-black py-15 items-center justify-center">
+      <div className="flex flex-nowrap items-center w-full h-23 bg-red-500 gap-8.5 pl-24.5 overflow-hidden">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <p key={index} className="text-3xl text-white whitespace-nowrap">
+            Fresh fast delivered{" "}
+          </p>
+        ))}
+      </div>
+      <div className="flex flex-col gap-26">
+        <div className="flex gap-55">
+          <img src="/Logo=Vertical.png" className="w-22 h-23" />
+          <div className="flex gap-25.5">
+            <div className="flex flex-col gap-4">
+              <p className="text-[#71717A]">NOMNOM</p>
+              <p className="text-white">Home</p>
+              <p className="text-white">Contact us</p>
+              <p className="text-white">Delivery zone</p>
+            </div>
+            <div className="flex flex-col gap-4">
+              <div className="text-[#71717A]">MENU</div>
+              <div className="grid grid-cols-2 h-46 ">
+                {menu.map((item) => (
+                  <p className="text-white" key={item.id}>
+                    {item.title}
+                  </p>
+                ))}
+              </div>
+            </div>
+            <div className="flex flex-col gap-4">
+              <p className="text-[#71717A]">FOLLOW US</p>
+              <div className="flex gap-4">
+                <img
+                  src="/Property 1=Facebook.png"
+                  alt=""
+                  className="h-7 w-7"
+                />
+                <img
+                  src="/Property 1=Instagram.png"
+                  alt=""
+                  className="h-7 w-7"
+                />
+              </div>
             </div>
           </div>
+        </div>
+        <div className="h-21 w-316 flex gap-12 border-t border-[#52525B] pt-6">
+          <p className="text-[#71717A]">Copy right 2024 © Nomnom LLC</p>
+          <p className="text-[#71717A]">Privacy policy</p>
+          <p className="text-[#71717A]">Terms and conditoin</p>
+          <p className="text-[#71717A]">Cookie policy</p>
         </div>
       </div>
-
-      {/* Main footer content */}
-      <div className="mx-auto max-w-6xl px-4 py-12">
-        <div className="grid gap-10 md:grid-cols-4">
-          {/* Brand */}
-          <div>
-            <div className="flex items-center gap-3">
-            <img src="Logo Container (1).png" alt="NomNom Logo" className="h-[88px] w-[93.7px]"/>
-              
-            </div>
-          </div>
-
-          {/* NomNom links */}
-          <div>
-            <p className="text-xs font-semibold text-zinc-400">NOMNOM</p>
-            <div className="mt-4 space-y-3 text-sm text-zinc-200">
-              <Link className="block hover:text-white" href="/">
-                Home
-              </Link>
-              <Link className="block hover:text-white" href="#">
-                Contact us
-              </Link>
-              <Link className="block hover:text-white" href="#">
-                Delivery zone
-              </Link>
-            </div>
-          </div>
-
-          {/* Menu links */}
-          <div>
-            <p className="text-xs font-semibold text-zinc-400">MENU</p>
-
-            <div className="mt-4 grid grid-cols-2 gap-x-10 gap-y-3 text-sm text-zinc-200">
-              <Link className="hover:text-white" href="/category">
-                Appetizers
-              </Link>
-              <Link className="hover:text-white" href="/category">
-                Side dish
-              </Link>
-
-              <Link className="hover:text-white" href="/category">
-                Salads
-              </Link>
-              <Link className="hover:text-white" href="/category">
-                Brunch
-              </Link>
-
-              <Link className="hover:text-white" href="/category">
-                Pizzas
-              </Link>
-              <Link className="hover:text-white" href="/category">
-                Desserts
-              </Link>
-
-              <Link className="hover:text-white" href="/category">
-                Lunch favorites
-              </Link>
-              <Link className="hover:text-white" href="/category">
-                Beverages
-              </Link>
-
-              <Link className="hover:text-white" href="/category">
-                Main dishes
-              </Link>
-              <Link className="hover:text-white" href="/category">
-                Fish & Sea foods
-              </Link>
-            </div>
-          </div>
-
-          {/* Social */}
-          <div>
-            <p className="text-xs font-semibold text-zinc-400">FOLLOW US</p>
-            <div className="mt-4 flex items-center gap-3">
-              <Link
-                href="#"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-zinc-800 text-zinc-200 hover:bg-zinc-700 hover:text-white"
-                aria-label="Facebook"
-              >
-                <Facebook className="h-4 w-4" />
-              </Link>
-
-              <Link
-                href="#"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-zinc-800 text-zinc-200 hover:bg-zinc-700 hover:text-white"
-                aria-label="Instagram"
-              >
-                <Instagram className="h-4 w-4" />
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Divider */}
-        <div className="mt-10 h-px w-full bg-zinc-800" />
-
-        {/* Bottom */}
-        <div className="mt-6 flex flex-col gap-3 text-xs text-zinc-500 md:flex-row md:items-center md:justify-between">
-          <p>Copy right 2024 © Nomnom LLC</p>
-
-          <div className="flex flex-wrap gap-x-8 gap-y-2">
-            <Link className="hover:text-zinc-300" href="#">
-              Privacy policy
-            </Link>
-            <Link className="hover:text-zinc-300" href="#">
-              Terms and condition
-            </Link>
-            <Link className="hover:text-zinc-300" href="#">
-              Cookie policy
-            </Link>
-          </div>
-        </div>
-      </div>
-    </footer>
+    </div>
   );
-}
+};

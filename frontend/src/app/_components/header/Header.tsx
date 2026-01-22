@@ -15,9 +15,14 @@ export default function Header() {
   return (
     <header className="w-full bg-zinc-900">
       <div className="mx-auto flex h-14 items-center justify-between px-4">
+
+        {user ? (
+          <></>
+        ) : (
         <Link href="/" className="flex items-center">
           <img src="/Logo Container.png" alt="Logo" className="h-8 w-auto" />
         </Link>
+        )}
 
         <div className="flex items-center gap-2">
           <DeliveryAddressDialog />

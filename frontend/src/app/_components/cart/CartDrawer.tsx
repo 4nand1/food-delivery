@@ -1,27 +1,68 @@
 "use client";
 
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import CartPanel from "./CartPanel";
+import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CartHeader } from "./CartHeader";
+import { CartContent } from "./CartContent";
 import { useCart } from "@/context/cart-context";
 
-export default function CartDrawer() {
-  const { isCartOpen, setIsCartOpen } = useCart();
+export function CartDrawer() {
+  const {
+    cartItems,
+    removeFromCart,
+    updateQuantity,
+    getTotalPrice,
+    isCartOpen,
+    setIsCartOpen,
+  } = useCart();
+
+  const subtotal = getTotalPrice();
+  const shipping = 0.99;
+  const total = subtotal + shipping;
 
   return (
     <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
-      <SheetContent side="right" className="w-[360px] p-0 sm:w-[400px]">
-        <SheetHeader className="border-b px-4 py-3">
-          <SheetTitle className="text-sm font-semibold text-zinc-900">
-            Order detail
-          </SheetTitle>
+      <SheetContent className="w-full sm:max-w-lg p-0 flex flex-col bg-[#404040]">
+        <SheetHeader className="px-6 py-4 border-b">
+          <CartHeader onClose={() => setIsCartOpen(false)} />
         </SheetHeader>
 
-        <CartPanel />
+        <Tabs defaultValue="cart" className="flex-1 flex flex-col">
+          <TabsList className="w-full rounded-full border-b bg-transparent p-0">
+            <TabsTrigger
+              value="cart"
+              className="flex-1 rounded-full data-[state=active]:bg-red-500 data-[state=active]:text-white py-3"
+            >
+              Cart
+            </TabsTrigger>
+            <TabsTrigger
+              value="order"
+              className="flex-1 rounded-full data-[state=active]:bg-red-500 data-[state=active]:text-white py-3"
+            >
+              Order
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="cart" className="flex-1 flex flex-col mt-0">
+            <CartContent
+              cartItems={cartItems}
+              subtotal={subtotal}
+              shipping={shipping}
+              total={total}
+              onUpdateQuantity={updateQuantity}
+              onRemoveFromCart={removeFromCart}
+            />
+          </TabsContent>
+
+          <TabsContent
+            value="order"
+            className="flex-1 overflow-auto px-6 py-4 mt-0"
+          >
+            <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+              <p>No orders yet</p>
+            </div>
+          </TabsContent>
+        </Tabs>
       </SheetContent>
     </Sheet>
   );

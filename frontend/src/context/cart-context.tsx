@@ -1,121 +1,94 @@
 "use client";
 
-import { createContext, useContext, useMemo, useState, ReactNode } from "react";
-import CartDrawer from "@/app/_components/cart/CartDrawer";
+import { createContext, useContext, useState, ReactNode } from "react";
+import { CartDrawer }  from "../app/_components/cart/CartDrawer";
 
-export type FoodItem = {
-  id: string;
-  title: string;
+export type Food = {
+  _id: string;
+  name: string;
   price: number;
-  desc: string;
+  ingredients: string;
   image: string;
+  categoryId: { _id: string; name: string }[];
 };
 
-export type CartItem = FoodItem & {
-  qty: number;
+export type CartItem = Food & {
+  quantity: number;
 };
 
-type CartContextType = {
-  items: CartItem[];
-
-  addToCart: (item: FoodItem) => void;
-  inc: (id: string) => void;
-  dec: (id: string) => void;
-  removeItem: (id: string) => void;
-  clear: () => void;
-
-  // ✅ useMemo totals
-  count: number;
-  itemsTotal: number;
-  shipping: number;
-  total: number;
-
-  // ✅ Drawer state
+interface CartContextType {
+  cartItems: CartItem[];
+  addToCart: (item: Food) => void;
+  removeFromCart: (id: string) => void;
+  updateQuantity: (id: string, quantity: number) => void;
+  getTotalItems: () => number;
+  getTotalPrice: () => number;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
-};
+}
 
-const CartContext = createContext<CartContextType | null>(null);
+const CartContext = createContext<CartContextType>({} as CartContextType);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  const shipping = 0.99;
-
-  const addToCart = (item: FoodItem) => {
-    if (!item?.id) return;
-
-    setItems((prev) => {
-      const found = prev.find((x) => x.id === item.id);
-      if (found) {
-        return prev.map((x) => (x.id === item.id ? { ...x, qty: x.qty + 1 } : x));
+  const addToCart = (item: Food) => {
+    setCartItems((prevItems) => {
+      const existingItem = prevItems.find((i) => i._id === item._id);
+      console.log(existingItem);
+      if (existingItem) {
+        return prevItems.map((i) =>
+          i._id === item._id ? { ...i, quantity: i.quantity + 1 } : i
+        );
       }
-      return [...prev, { ...item, qty: 1 }];
+      return [...prevItems, { ...item, quantity: 1 }];
     });
-
-    // figma шиг: add дархад cart нээгдэнэ
-    setIsCartOpen(true);
   };
 
-  const inc = (id: string) => {
-    setItems((prev) => prev.map((x) => (x.id === id ? { ...x, qty: x.qty + 1 } : x)));
+  const removeFromCart = (id: string) => {
+    setCartItems((prevItems) => prevItems.filter((item) => item._id !== id));
   };
 
-  const dec = (id: string) => {
-    setItems((prev) =>
-      prev.map((x) => {
-        if (x.id !== id) return x;
-        const nextQty = Math.max(1, x.qty - 1);
-        return { ...x, qty: nextQty };
-      })
+  const updateQuantity = (id: string, quantity: number) => {
+    if (quantity <= 0) {
+      removeFromCart(id);
+      return;
+    }
+    setCartItems((prevItems) =>
+      prevItems.map((item) => (item._id === id ? { ...item, quantity } : item))
     );
   };
 
-  const removeItem = (id: string) => {
-    setItems((prev) => prev.filter((x) => x.id !== id));
+  const getTotalItems = () => {
+    return cartItems.reduce((total, item) => total + item.quantity, 0);
   };
 
-  const clear = () => setItems([]);
-
-  const count = useMemo(() => items.reduce((sum, x) => sum + x.qty, 0), [items]);
-
-  const itemsTotal = useMemo(
-    () => items.reduce((sum, x) => sum + x.price * x.qty, 0),
-    [items]
-  );
-
-  const total = useMemo(() => (items.length === 0 ? 0 : itemsTotal + shipping), [
-    items.length,
-    itemsTotal,
-  ]);
-
-  const value: CartContextType = {
-    items,
-    addToCart,
-    inc,
-    dec,
-    removeItem,
-    clear,
-    count,
-    itemsTotal,
-    shipping,
-    total,
-    isCartOpen,
-    setIsCartOpen,
+  const getTotalPrice = () => {
+    return cartItems.reduce((total, item) => {
+      const price = item.price;
+      return total + price * item.quantity;
+    }, 0);
+    return 3;
   };
 
   return (
-    <CartContext.Provider value={value}>
+    <CartContext.Provider
+      value={{
+        cartItems,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        getTotalItems,
+        getTotalPrice,
+        isCartOpen,
+        setIsCartOpen,
+      }}
+    >
       {children}
-      {/* ✅ Drawer-г provider дотор mount хийнэ */}
       <CartDrawer />
     </CartContext.Provider>
   );
 }
 
-export function useCart() {
-  const ctx = useContext(CartContext);
-  if (!ctx) throw new Error("useCart must be used within <CartProvider />");
-  return ctx;
-}
+export const useCart = () => useContext(CartContext);
