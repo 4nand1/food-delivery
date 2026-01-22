@@ -5,10 +5,12 @@ import { ShoppingCart, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DeliveryAddressDialog from "./DeliveryAddressDialog";
 import { useCart } from "@/app/_components/cart/CartProvider";
+import { useAuth } from "@/context/AuthProvider";
 
 export default function Header() {
   const { setIsCartOpen, count } = useCart();
-  c
+
+  const { user } = useAuth();
 
   return (
     <header className="w-full bg-zinc-900">
@@ -39,6 +41,8 @@ export default function Header() {
           <Button variant="ghost" size="icon" className="text-white">
             <User className="h-5 w-5" />
           </Button>
+
+          { }
         </div>
       </div>
     </header>

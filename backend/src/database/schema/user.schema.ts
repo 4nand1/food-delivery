@@ -6,7 +6,7 @@ const userChema = new Schema({
     password: { type: String, required: true },
     profileImage: { type: String, required: false },
     adress: { type: String, required: false },
-    phone: { type: String, required: false },
+    role: { type: String, required: true, default: 'costumer' },
    
     
 }, {

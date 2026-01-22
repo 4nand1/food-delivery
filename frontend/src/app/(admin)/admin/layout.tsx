@@ -1,6 +1,6 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import React from "react";
-import { AppSidebar } from "./_components/AppSidebar";
+import { AdminSidebar } from "./_components/AppSidebar";
 
 export default function AdminLayout({
   children,
@@ -10,7 +10,7 @@ export default function AdminLayout({
   return (
     <>
       <SidebarProvider>
-        <AppSidebar />
+        <AdminSidebar />
         <main className="flex-1">{children}</main>
       </SidebarProvider>{" "}
     </>

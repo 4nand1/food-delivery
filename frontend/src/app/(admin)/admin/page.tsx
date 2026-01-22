@@ -1,68 +1,93 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { FoodEditCard } from "@/app/(admin)/admin/_components/FoodEditCard";
 import { Button } from "@/components/ui/button";
-
+import { useEffect, useState } from "react";
+import { Card } from "@/components/ui/card";
+import { Category } from "./_components/CreateFoodDialog";
 import { api } from "@/lib/axios";
-import { CreateFoodDialog } from "./_components/CreateFood";
+import { CategoryFoods } from "./_components/CategoryFoods";
+import { CreateCategoryDialog } from "./_components/CreateCategoryDialog";
+import { cn } from "@/lib/utils";
+import { Trash } from "lucide-react";
 
-type Food = {
-  _id: string;
-  name: string;
-  price: number;
-  ingredients: string;
-  imageUrl: string;
-  categoryId: [
-    {
-      _id: string;
-      name: string;
-    }
-  ];
-};  
-
-export default function Home() {
-  const [foods, setFoods] = useState<Food[]>([]);
+const AdminPage = () => {
+  const [selectedCategories, setSelectedCategories] = useState<string | null>(
+    null
+  );
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    const getData = async () => {
-      const { data } = await api.get<Food[]>("/foods");
-      setFoods(data);
+    const fetchCategories = async () => {
+      const { data } = await api.get<Category[]>("/categories");
+      setCategories(data);
     };
-    getData();
-  }, []);
 
-  const onAddToCart = (food: Food) => {
-    console.log("Added to cart:", food);
+    fetchCategories();
+  }, []);
+  const handleCategorySelect = (categoryId: string | null) => {
+    setSelectedCategories(categoryId);
+  };
+  const handleDelete = async (id: string) => {
+    await api.delete(`categories/delete/${id}`);
   };
 
   return (
-    <div className="min-h-screen bg-secondary p-8">
-      <div className="flex justify-end mb-4">
-        <Button variant="ghost" className="rounded-full">
-          <img src="/Container (7).png" alt="Logo" />
-        </Button>
+    <main className="flex flex-col gap-6 p-8 ">
+      <div className="w-full flex justify-end">
+        <img src="/" alt="" className="h-9 w-9 rounded-full" />
       </div>
-
-      <div className="border rounded-lg bg-white p-5">
-        <p className="text-lg font-semibold mb-5">Appetizers</p>
-
-        <div className="grid grid-cols-4 gap-5">
-          <CreateFoodDialog />
-
-          {foods.map((food) => (
-            <FoodEditCard
-              key={food._id}
-              food={food}
-              name={food.name}
-              price={food.price}
-              ingredients={food.ingredients}
-              imageUrl={food.imageUrl}
-              onAddToCart={onAddToCart}
-            />
+      <Card className="flex flex-col gap-4 p-6">
+        <h3>Dishes category</h3>
+        <div className="flex gap-3">
+          <Button
+            className={cn(
+              "bg-white text-black border border-[#E4E4E7] rounded-full",
+              selectedCategories === null && "bg-black text-white"
+            )}
+            onClick={() => handleCategorySelect(null)}
+          >
+            All
+          </Button>
+          {categories.map((category) => (
+            <Button
+              key={category._id}
+              onClick={() => handleCategorySelect(category._id)}
+              className={cn(
+                "bg-white text-black border border-[#E4E4E7] rounded-full",
+                category._id === selectedCategories && "bg-black text-white"
+              )}
+            >
+              {category.name}{" "}
+              <Button
+                className="rounded-full bg-white text-red-500 h-6 w-6"
+                onClick={() => handleDelete(category._id)}
+              >
+                <Trash />
+              </Button>
+            </Button>
           ))}
+          <CreateCategoryDialog />
         </div>
-      </div>
-    </div>
+      </Card>
+
+      {selectedCategories === null
+        ? categories.map((category) => (
+            <CategoryFoods
+              key={category._id}
+              categoryId={category._id}
+              categoryName={category.name}
+            />
+          ))
+        : categories
+            .filter((category) => category._id === selectedCategories)
+            .map((el) => (
+              <CategoryFoods
+                key={el._id}
+                categoryId={el._id}
+                categoryName={el.name}
+              />
+            ))}
+    </main>
   );
-}
+};
+export default AdminPage;
