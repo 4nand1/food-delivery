@@ -16,7 +16,7 @@ export const login: RequestHandler = async (req, res) => {
       .status(401)
       .json({ message: "Username or password is incorrect" });
 
-  const accessToken = jwt.sign({ user: rest }, "Secret");
+  const accessToken = jwt.sign({ user: rest }, "Secret" );
 
   res.status(200).json({
     user: rest,

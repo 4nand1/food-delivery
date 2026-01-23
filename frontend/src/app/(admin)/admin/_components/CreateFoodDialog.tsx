@@ -32,6 +32,7 @@ import * as z from "zod";
 import { api } from "@/lib/axios";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { log } from "console";
 
 const foodFormSchema = z.object({
   name: z.string().min(2, {
@@ -44,7 +45,7 @@ const foodFormSchema = z.object({
     },
     {
       message: "Price must be a valid positive number.",
-    }
+    },
   ),
   image: z.string().min(1, {
     message: "Image is required.",
@@ -83,7 +84,7 @@ export const CreateFoodDialog = () => {
   });
 
   const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -96,7 +97,7 @@ export const CreateFoodDialog = () => {
         {
           method: "POST",
           body: file,
-        }
+        },
       );
 
       if (!response.ok) {
@@ -125,7 +126,9 @@ export const CreateFoodDialog = () => {
     }
   };
 
-  const onSubmit = async (values: FoodFormValues) => {
+  const onSubmit = async (values: z.infer<typeof foodFormSchema>) => {
+    console.log("hello");
+
     await api.post("/foods", {
       name: values.name,
       price: parseFloat(values.price),

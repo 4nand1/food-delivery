@@ -1,55 +1,70 @@
 "use client";
 
-import Link from "next/link";
-import { ShoppingCart, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import DeliveryAddressDialog from "./DeliveryAddressDialog";
-import { useCart } from "@/app/_components/cart/CartProvider";
 import { useAuth } from "@/context/AuthProvider";
+import { useCart } from "@/context/cart-context";
+import { Button } from "@/components/ui/button";
+import {
+  ChevronRight,
+  LocationEdit,
+  Map,
+  MapIcon,
+  ShoppingCart,
+  User,
+} from "lucide-react";
+import Link from "next/link";
 
-export default function Header() {
-  const { setIsCartOpen, count } = useCart();
+interface HeaderProps {
+  totalItems?: number;
+  onCartClick?: () => void;
+}
+
+export const Header = ({ totalItems }: HeaderProps) => {
+  const { addToCart, getTotalItems, setIsCartOpen } = useCart();
 
   const { user } = useAuth();
 
   return (
-    <header className="w-full bg-zinc-900">
-      <div className="mx-auto flex h-14 items-center justify-between px-4">
-
+    <div className="w-screen h-17 flex items-center justify-between bg-black px-4">
+      <img src="/Logo=Horizon.png" className="h-11 w-36.5" />
+      <div className="flex gap-3">
         {user ? (
           <></>
         ) : (
-        <Link href="/" className="flex items-center">
-          <img src="/Logo Container.png" alt="Logo" className="h-8 w-auto" />
-        </Link>
+          <Link href="/auth/signup">
+            <Button className="h-9 w-18.25 bg-white text-black rounded-full">
+              Sign up
+            </Button>
+          </Link>
         )}
-
-        <div className="flex items-center gap-2">
-          <DeliveryAddressDialog />
-
-          {/* CART */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="relative text-white"
-            onClick={() => setIsCartOpen(true)}
-          >
-            <ShoppingCart className="h-5 w-5" />
-            {count > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-5 rounded-full bg-red-500 px-1 text-[10px] leading-5 text-white">
-                {count}
-              </span>
-            )}
-          </Button>
-
-          {/* USER */}
-          <Button variant="ghost" size="icon" className="text-white">
-            <User className="h-5 w-5" />
-          </Button>
-
-          { }
-        </div>
+        {user ? (
+          <></>
+        ) : (
+          <Link href="/auth/login">
+            <Button className="h-9 w-16.25 bg-red-500 text-white rounded-full">
+              Log In
+            </Button>
+          </Link>
+        )}
+        <Button
+          variant="outline"
+          className="px-4 py-1.5 h-9 bg-white rounded-full text-xs flex items-center gap-2 hover:bg-gray-50 border-none "
+        >
+          <LocationEdit className="text-red-500" />
+          <p className="text-red-500">Delivery address:</p>
+          <p className="text-[#71717A]">Add Location</p>
+          <ChevronRight className="text-[#18181B]" />
+        </Button>
+        <Button
+          size="icon"
+          className="w-9 h-9 bg-white rounded-full hover:bg-red-600 relative transition-all shadow-md"
+          onClick={() => setIsCartOpen(true)}
+        >
+          <ShoppingCart className="h-4 w-4 text-black" />
+        </Button>
+        <Button className="w-9 h-9 bg-red-500 rounded-full hover:bg-red-600 relative transition-all shadow-md">
+          <User />
+        </Button>
       </div>
-    </header>
+    </div>
   );
-}
+};
