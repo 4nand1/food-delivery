@@ -2,9 +2,9 @@
 
 import { CartItem as CartItemType } from "@/context/cart-context";
 import { CartItem } from "./Cart-item";
-import  { EmptyCart }  from "./EmptyCart";
-import { DeliveryLocation } from "./DeliveryLocation";
-import { PaymentSummary } from "./PaymentSummary";
+import  { EmptyCart }  from "./Empty-cart";
+import { DeliveryLocation } from "./Delivery-location";
+import { PaymentSummary } from "./Payment-summary";
 import { Button } from "@/components/ui/button";
 
 interface CartContentProps {

@@ -2,8 +2,8 @@
 
 import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CartHeader } from "./CartHeader";
-import { CartContent } from "./CartContent";
+import { CartHeader } from "./Cart-header";
+import { CartContent } from "./Cart-Content";
 import { useCart } from "@/context/cart-context";
 
 export function CartDrawer() {
