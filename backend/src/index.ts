@@ -3,6 +3,7 @@ import { connectToDatabase } from './database/index.js'
 import { AuthRouter, CategoryRouter, FoodRouter } from './routes/index.js'
 
 import cors from 'cors'
+import { OrderRouter } from './routes/order.router.js'
 
 
 
@@ -14,6 +15,7 @@ app.use(express.json())
 
 app.use('/foods',FoodRouter)
 app.use('/categories',CategoryRouter)
+app.use('/orders',OrderRouter)
 app.use('/auth',AuthRouter)
 
 app.listen(4000, () => {

@@ -1,5 +1,6 @@
-import { RequestHandler } from "express";
-import { OrderModel } from "../database/schema/order.scema.js";
+import type { RequestHandler } from "express";
+import { OrderModel } from "../../database/schema/order.scema.js";
+
 
 
 export const createOrder: RequestHandler = async (req, res) => {
@@ -15,10 +16,7 @@ export const createOrder: RequestHandler = async (req, res) => {
     {
       ...body,
       userId,
-    
     }
-
   )
   res.status(201).json(order);
-
   }
