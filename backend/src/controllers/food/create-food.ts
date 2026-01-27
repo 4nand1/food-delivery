@@ -8,7 +8,7 @@ export const createFood: RequestHandler = async (req, res) => {
     name: body.name,
     price: body.price,
     ingredients: body.ingredients,
-    imageUrl: body.image,
+    image: body.image,
     categoryId: body.categoryId,
   });
   res.status(201).json(food);
