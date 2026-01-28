@@ -38,7 +38,7 @@ export default function Login() {
   });
   function onSubmit(values: z.infer<typeof formSchema>) {
     login(values.username, values.password);
-    
+    console.log("agadg");
     console.log(values);
   }
   return (
@@ -61,7 +61,7 @@ export default function Login() {
                   <FormItem>
                     <FormControl>
                       <Input
-                        placeholder="Enter your email address"
+                        placeholder="Enter your username"
                         className="h-9 w-104"
                         {...field}
                       />
@@ -102,7 +102,7 @@ export default function Login() {
 
         <div className="flex gap-3">
           <p className="text-[#71717A] text-[16px]">Don’t have an account?</p>
-          <Link href="./signup">
+          <Link href="/auth/signup">
             <p className="text-[16px] text-[#2563EB]">Sign up </p>
           </Link>
         </div>
