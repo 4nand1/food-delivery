@@ -2,8 +2,8 @@
 
 import { FirstStep } from "@/app/_components/signupsteps/firststep";
 import { SecondStep } from "@/app/_components/signupsteps/secondstep";
-import { useState } from "react";
 import { useAuth } from "@/context/AuthProvider";
+import { useState } from "react";
 
 export default function Signup() {
   const [step, setStep] = useState<number>(1);
