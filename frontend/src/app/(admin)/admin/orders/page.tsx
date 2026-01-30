@@ -1,81 +1,93 @@
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Calendar, ChevronDown, ChevronsUpDownIcon } from "lucide-react";
+"use client";
 
-export default function OrdersPage() {
+import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { Card } from "@/components/ui/card";
+import { Category } from "../_components/CreateFoodDialog";
+import { api } from "@/lib/axios";
+import { CategoryFoods } from "../_components/CategoryFoods";
+import { CreateCategoryDialog } from "../_components/CreateCategoryDialog";
+import { cn } from "@/lib/utils";
+import { Trash } from "lucide-react";
+
+const AdminPage = () => {
+  const [selectedCategories, setSelectedCategories] = useState<string | null>(
+    null
+  );
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const { data } = await api.get<Category[]>("/categories");
+      setCategories(data);
+    };
+
+    fetchCategories();
+  }, []);
+  const handleCategorySelect = (categoryId: string | null) => {
+    setSelectedCategories(categoryId);
+  };
+  const handleDelete = async (id: string) => {
+    await api.delete(`categories/delete/${id}`);
+  };
+
   return (
-    <div className="w-screen flex flex-col gap-6 p-8">
+    <main className="flex flex-col gap-6 p-8 ">
       <div className="w-full flex justify-end">
         <img src="/" alt="" className="h-9 w-9 rounded-full" />
       </div>
-      <Card className="flex flex-col">
-        <div className="flex justify-between px-4 items-center">
-          <div className="flex flex-col">
-            <p className="text-xl font-bold">Orders</p>
-            <p className="text-xs text-[#71717A]">12 items</p>
-          </div>
-          <div className="flex gap-3">
-            <Button className="h-9 w-75 bg-white text-black border border-[#E4E4E7] rounded-full">
-              <Calendar />
-              13 June 2023 - 14 July 2023
+      <Card className="flex flex-col gap-4 p-6">
+        <h3>Dishes category</h3>
+        <div className="flex gap-3">
+          <Button
+            className={cn(
+              "bg-white text-black border border-[#E4E4E7] rounded-full",
+              selectedCategories === null && "bg-black text-white"
+            )}
+            onClick={() => handleCategorySelect(null)}
+          >
+            All
+          </Button>
+          {categories.map((category) => (
+            <Button
+              key={category._id}
+              onClick={() => handleCategorySelect(category._id)}
+              className={cn(
+                "bg-white text-black border border-[#E4E4E7] rounded-full",
+                category._id === selectedCategories && "bg-black text-white"
+              )}
+            >
+              {category.name}{" "}
+              <Button
+                className="rounded-full bg-white text-red-500 h-8 w-8"
+                onClick={() => handleDelete(category._id)}
+              >
+                <Trash />
+              </Button>
             </Button>
-            <Button className="h-9 w-44.5 rounded-full opacity-20">
-              Change delivery state
-            </Button>
-          </div>
+          ))}
+          <CreateCategoryDialog />
         </div>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>
-                <Checkbox className="h-4 w-4" />
-              </TableHead>
-              <TableHead>№</TableHead>
-              <TableHead>Customer</TableHead>
-              <TableHead>Food</TableHead>
-              <TableHead className="flex justify-between items-center">
-                Date <ChevronsUpDownIcon />
-              </TableHead>
-              <TableHead>Total</TableHead>
-              <TableHead>Delivery Address</TableHead>
-              <TableHead className="flex justify-between items-center">
-                Delivery state <ChevronsUpDownIcon />
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {Array.from({ length: 12 }).map((_, index) => (
-              <TableRow key={index}>
-                <TableCell>
-                  <Checkbox className="h-4 w-4" />
-                </TableCell>
-                <TableCell>1</TableCell>
-                <TableCell>Test@gamil.com</TableCell>
-                <TableCell className="flex items-center">
-                  2 foods <ChevronDown />
-                </TableCell>
-                <TableCell>2024/12/20</TableCell>
-                <TableCell>$26.97</TableCell>
-                <TableCell>
-                  2024/12/СБД, 12-р хороо, СБД нэгдсэн эмнэлэг Sbd negdse...
-                </TableCell>
-                <TableCell className="bg-white text-whie flex justify-between">
-                  Pending <ChevronsUpDownIcon />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
       </Card>
-    </div>
+
+      {selectedCategories === null
+        ? categories.map((category) => (
+            <CategoryFoods
+              key={category._id}
+              categoryId={category._id}
+              categoryName={category.name}
+            />
+          ))
+        : categories
+            .filter((category) => category._id === selectedCategories)
+            .map((el) => (
+              <CategoryFoods
+                key={el._id}
+                categoryId={el._id}
+                categoryName={el.name}
+              />
+            ))}
+    </main>
   );
-}
+};
+export default AdminPage;

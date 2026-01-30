@@ -26,6 +26,8 @@ export default function Signup() {
       onNextStep={handleNextStep}
       setEmail={setEmail}
       setUsername={setUsername}
+      email={email}
+      username={username}
     />
   ) : (
     <SecondStep
