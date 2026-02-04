@@ -21,6 +21,7 @@ export const FirstStep = ({
   onNextStep,
   setEmail,
   setUsername,
+  
 }: {
   step: number;
   onNextStep: () => void;
@@ -45,7 +46,6 @@ export const FirstStep = ({
   function onSubmit(values: z.infer<typeof formSchema>) {
     setEmail(values.email);
     setUsername(values.username);
-    console.log("agadg");
     onNextStep();
   }
 
