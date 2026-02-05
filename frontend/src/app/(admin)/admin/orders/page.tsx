@@ -1,93 +1,154 @@
 "use client";
 
+import { OrderContentType } from "@/app/_components/cart/Order-content";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Category } from "../_components/CreateFoodDialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { api } from "@/lib/axios";
-import { CategoryFoods } from "../_components/CategoryFoods";
-import { CreateCategoryDialog } from "../_components/CreateCategoryDialog";
 import { cn } from "@/lib/utils";
-import { Trash } from "lucide-react";
+import { DialogTrigger } from "@radix-ui/react-dialog";
+import { Calendar, ChevronDown, ChevronsUpDownIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { SelectStatus } from "../_components/ChangeStatus";
 
-const AdminPage = () => {
-  const [selectedCategories, setSelectedCategories] = useState<string | null>(
-    null
-  );
-  const [categories, setCategories] = useState<Category[]>([]);
+type User = {
+  userId: any;
+  orderItems: [
+    {
+      foodId: any;
+      quantity: Number;
+      price: Number;
+    },
+  ];
+  status: String;
+  address: String;
+};
 
+export default function OrdersPage() {
+  // const [user, setUser] = useState<User[]>([]);
+
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     const { data } = await api.get<User[]>("/orders/");
+  //     console.log("data", data);
+  //     setUser(data);
+  //   };
+
+  //   getData();
+  // });
+  const [orderedFood, setOrderedFood] = useState<OrderContentType[]>([]);
   useEffect(() => {
-    const fetchCategories = async () => {
-      const { data } = await api.get<Category[]>("/categories");
-      setCategories(data);
+    const getData = async () => {
+      try {
+        const { data } = await api.get<OrderContentType[]>("/orders", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        });
+        setOrderedFood(data);
+        console.log("Fetched Items", data);
+      } catch (error) {
+        console.log("Error fetching Items", error);
+      }
     };
 
-    fetchCategories();
+    getData();
   }, []);
-  const handleCategorySelect = (categoryId: string | null) => {
-    setSelectedCategories(categoryId);
-  };
-  const handleDelete = async (id: string) => {
-    await api.delete(`categories/delete/${id}`);
-  };
+  console.log(orderedFood);
 
   return (
-    <main className="flex flex-col gap-6 p-8 ">
+    <div className="w-screen flex flex-col gap-6 p-8">
       <div className="w-full flex justify-end">
         <img src="/" alt="" className="h-9 w-9 rounded-full" />
       </div>
-      <Card className="flex flex-col gap-4 p-6">
-        <h3>Dishes category</h3>
-        <div className="flex gap-3">
-          <Button
-            className={cn(
-              "bg-white text-black border border-[#E4E4E7] rounded-full",
-              selectedCategories === null && "bg-black text-white"
-            )}
-            onClick={() => handleCategorySelect(null)}
-          >
-            All
-          </Button>
-          {categories.map((category) => (
-            <Button
-              key={category._id}
-              onClick={() => handleCategorySelect(category._id)}
-              className={cn(
-                "bg-white text-black border border-[#E4E4E7] rounded-full",
-                category._id === selectedCategories && "bg-black text-white"
-              )}
-            >
-              {category.name}{" "}
-              <Button
-                className="rounded-full bg-white text-red-500 h-8 w-8"
-                onClick={() => handleDelete(category._id)}
-              >
-                <Trash />
-              </Button>
+      <Card className="flex flex-col">
+        <div className="flex justify-between px-4 items-center">
+          <div className="flex flex-col">
+            <p className="text-xl font-bold">Orders</p>
+            <p className="text-xs text-[#71717A]">12 items</p>
+          </div>
+          <div className="flex gap-3">
+            <Button className="h-9 w-75 bg-white text-black border border-[#E4E4E7] rounded-full">
+              <Calendar />
+              13 June 2023 - 14 July 2023
             </Button>
-          ))}
-          <CreateCategoryDialog />
+            <Button className="h-9 w-44.5 rounded-full opacity-20">
+              Change delivery state
+            </Button>
+          </div>
         </div>
-      </Card>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>
+                <Checkbox className="h-4 w-4" />
+              </TableHead>
+              <TableHead>№</TableHead>
+              <TableHead>Customer</TableHead>
+              <TableHead>Food</TableHead>
+              <TableHead className="flex justify-between items-center">
+                Date <ChevronsUpDownIcon />
+              </TableHead>
+              <TableHead>Total</TableHead>
+              <TableHead>Delivery Address</TableHead>
+              <TableHead className="flex justify-between items-center">
+                Delivery state <ChevronsUpDownIcon />
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {orderedFood.map((item, index) => (
+              <TableRow key={index}>
+                <TableCell>
+                  <Checkbox className="h-4 w-4" />
+                </TableCell>
+                <TableCell>1</TableCell>
+                <TableCell>{item.userId.username}</TableCell>
+                <TableCell className="flex items-center">
+                  {item.orderItems.length} foods <ChevronDown />
+                </TableCell>
 
-      {selectedCategories === null
-        ? categories.map((category) => (
-            <CategoryFoods
-              key={category._id}
-              categoryId={category._id}
-              categoryName={category.name}
-            />
-          ))
-        : categories
-            .filter((category) => category._id === selectedCategories)
-            .map((el) => (
-              <CategoryFoods
-                key={el._id}
-                categoryId={el._id}
-                categoryName={el.name}
-              />
+                <TableCell>2024/12/20</TableCell>
+                <TableCell>
+                  {item.orderItems.reduce(
+                    (acc, cur) => acc + cur.price * cur.quantity,
+                    0,
+                  )}
+                </TableCell>
+                <TableCell>{item.address}</TableCell>
+                <Dialog>
+                  <DialogTrigger>
+                    <TableCell
+                      className={cn(
+                        item.status === "pending" &&
+                          "bg-white text-whie flex justify-between items-center rounded-full h-8 w-23.5 border border-red-500",
+                        item.status === "cancelled" &&
+                          "bg-white text-whie flex justify-between items-center rounded-full h-8 w-23.5 border ",
+                        item.status === "completed" &&
+                          "bg-white text-whie flex justify-between items-center rounded-full h-8 w-23.5 border border-green-500",
+                      )}
+                    >
+                      {item.status} <ChevronsUpDownIcon />
+                    </TableCell>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <SelectStatus id={item._id} currentStatus={item.status} />
+                  </DialogContent>
+                </Dialog>
+              </TableRow>
             ))}
-    </main>
+          </TableBody>
+        </Table>
+      </Card>
+    </div>
   );
-};
-export default AdminPage;
+}

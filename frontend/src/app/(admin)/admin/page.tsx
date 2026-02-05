@@ -59,7 +59,7 @@ const AdminPage = () => {
             >
               {category.name}{" "}
               <Button
-                className="rounded-full bg-white text-red-500 h-6 w-6"
+                className="rounded-full bg-white text-red-500 h-8 w-8"
                 onClick={() => handleDelete(category._id)}
               >
                 <Trash />
