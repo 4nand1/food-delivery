@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, X } from "lucide-react";
-import { CartItem as CartItemType } from "@/context/cart-context";
+import { CartItem as CartItemType } from "@/context/Cart-context";
 
 interface CartItemProps {
   item: CartItemType;

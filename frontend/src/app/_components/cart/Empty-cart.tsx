@@ -1,19 +1,12 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+"use client";
 
-export  function EmptyCart() {
+import { ShoppingCart } from "lucide-react";
+
+export function EmptyCart() {
   return (
-    <div className="rounded-2xl bg-zinc-900/40 p-8 text-center ring-1 ring-white/10">
-      <p className="text-base font-semibold text-white">Your cart is empty</p>
-      <p className="mt-2 text-sm text-white/60">
-        Add something tasty to start your order.
-      </p>
-
-      <Link href="/" className="inline-block">
-        <Button className="mt-5 rounded-full bg-[#FF4D2E] text-white hover:bg-[#FF4D2E]/90">
-          Browse food
-        </Button>
-      </Link>
+    <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+      <ShoppingCart className="w-16 h-16 mb-4 opacity-20" />
+      <p>Your cart is empty</p>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { OrderContentType } from "@/app/_components/cart/Order-content";
+import { OrderContentType } from "@/app/_components/cart/Order-Content";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { Calendar, ChevronDown, ChevronsUpDownIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { SelectStatus } from "../_components/ChangeStatus";
+import { SelectStatus } from "../_components/Change-status";
 
 type User = {
   userId: any;

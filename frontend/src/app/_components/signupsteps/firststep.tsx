@@ -27,6 +27,8 @@ export const FirstStep = ({
   onNextStep: () => void;
   setEmail: Dispatch<SetStateAction<string>>;
   setUsername: Dispatch<SetStateAction<string>>;
+  email: string;
+  username: string;
 }) => {
   const formSchema = z.object({
     email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, {

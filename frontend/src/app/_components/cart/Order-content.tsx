@@ -1,7 +1,7 @@
-import { useCart } from "@/context/cart-context";
+import { useCart } from "@/context/Cart-context";
 import { api } from "@/lib/axios";
 import { useEffect, useState } from "react";
-import { CartItem as CartItemType, Food } from "@/context/cart-context";
+import { CartItem as CartItemType, Food } from "@/context/Cart-context";
 import { OrderHistory } from "./OrderHistory";
 
 type User = {

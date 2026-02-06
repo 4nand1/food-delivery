@@ -1,4 +1,4 @@
-import { OrderItem } from "./Order-content";
+import { OrderItem } from "./Order-Content";
 
 type OrderHistoryType = {
   orderItems: OrderItem[];

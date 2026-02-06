@@ -1,8 +1,9 @@
 "use client";
 
 import { useAuth } from "@/context/AuthProvider";
-import { useCart } from "@/context/cart-context";
+import { useCart } from "@/context/Cart-context";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
   ChevronRight,
   LocationEdit,
@@ -12,6 +13,7 @@ import {
   User,
 } from "lucide-react";
 import Link from "next/link";
+import { Changeaddress } from "../adress/Changeadress";
 
 interface HeaderProps {
   totalItems?: number;
@@ -21,7 +23,7 @@ interface HeaderProps {
 export const Header = ({ totalItems }: HeaderProps) => {
   const { addToCart, getTotalItems, setIsCartOpen } = useCart();
 
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   return (
     <div className="w-screen h-17 flex items-center justify-between bg-black px-4">
@@ -30,7 +32,7 @@ export const Header = ({ totalItems }: HeaderProps) => {
         {user ? (
           <></>
         ) : (
-          <Link href="/auth/signup">
+          <Link href="/auth/register">
             <Button className="h-9 w-18.25 bg-white text-black rounded-full">
               Sign up
             </Button>
@@ -45,15 +47,23 @@ export const Header = ({ totalItems }: HeaderProps) => {
             </Button>
           </Link>
         )}
-        <Button
-          variant="outline"
-          className="px-4 py-1.5 h-9 bg-white rounded-full text-xs flex items-center gap-2 hover:bg-gray-50 border-none "
-        >
-          <LocationEdit className="text-red-500" />
-          <p className="text-red-500">Delivery address:</p>
-          <p className="text-[#71717A]">Add Location</p>
-          <ChevronRight className="text-[#18181B]" />
-        </Button>
+        <Dialog>
+          <DialogTrigger>
+            <Button
+              variant="outline"
+              className="px-4 py-1.5 h-9 bg-white rounded-full text-xs flex items-center gap-2 hover:bg-gray-50 border-none "
+            >
+              <LocationEdit className="text-red-500" />
+              <p className="text-red-500">Delivery address:</p>
+              <p className="text-[#71717A]">Add Location</p>
+              <ChevronRight className="text-[#18181B]" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <Changeaddress />
+          </DialogContent>
+        </Dialog>
+
         <Button
           size="icon"
           className="w-9 h-9 bg-white rounded-full hover:bg-red-600 relative transition-all shadow-md"
@@ -61,9 +71,17 @@ export const Header = ({ totalItems }: HeaderProps) => {
         >
           <ShoppingCart className="h-4 w-4 text-black" />
         </Button>
-        <Button className="w-9 h-9 bg-red-500 rounded-full hover:bg-red-600 relative transition-all shadow-md">
-          <User />
-        </Button>
+        {user ? (
+          <Button className="text-white flex items-center" onClick={logout}>
+            Hello {user.username}!
+          </Button>
+        ) : (
+          <Link href="/auth/login">
+            <Button className="w-9 h-9 bg-red-500 rounded-full hover:bg-red-600 relative transition-all shadow-md">
+              <User />
+            </Button>
+          </Link>
+        )}
       </div>
     </div>
   );

@@ -1,9 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 import { MenuCard } from "./MenuCard";
-import { Food, useCart } from "@/context/cart-context";
+import { Food, useCart } from "@/context/Cart-context";
 import { toast } from "sonner";
 import { api } from "@/lib/axios";
+import { error } from "console";
 
 type FoodSectionProps = {
   categoryName: string;
@@ -32,8 +33,20 @@ export const MenuSection = ({ categoryId, categoryName }: FoodSectionProps) => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await api.get<Food[]>(`/foods/category/${categoryId}`);
-      setFoods(data);
+      try {
+        const { data } = await api.get<Food[]>(
+          `/foods/category/${categoryId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+          },
+        );
+        setFoods(data);
+        console.log("Fetched foods", data);
+      } catch {
+        console.log("Error fetching foods");
+      }
     };
 
     getData();
