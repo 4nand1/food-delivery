@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { model, Schema } from "mongoose";
 
 const foodSchema = new Schema(
   {
@@ -6,13 +6,15 @@ const foodSchema = new Schema(
     price: { type: Number, required: true },
     image: { type: String, required: true },
     ingredients: { type: String, required: true },
-    categoryId: {
-      type: Schema.Types.ObjectId,
-      ref: "Category",
-      required: true,
-    },
+    categoryId: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Category",
+        required: true,
+      },
+    ],
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 export const FoodModel = model("Food", foodSchema);

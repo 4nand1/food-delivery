@@ -1,8 +1,10 @@
-import { Schema,model } from "mongoose";
+import { model, Schema } from "mongoose";
 
-const categorySchema=new Schema({
-   name:{type:String,required:true, unique:true},
-    
-},{timestamps:true});
+const categorySchema = new Schema(
+  {
+    name: { type: String, required: true, unique: true },
+  },
+  { timestamps: true }
+);
 
-export const CategoryModel=model('Category',categorySchema);
+export const CategoryModel = model("Category", categorySchema);

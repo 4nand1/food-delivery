@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import { OrderModel } from "../../database/schema/order.scema.js";
+import { OrderModel } from "../../database/schema/order.schema.js";
 
 export const updateOrder: RequestHandler = async (req, res) => {
   const { id } = req.params;

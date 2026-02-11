@@ -1,18 +1,14 @@
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import React from "react";
-import { AdminSidebar } from "./_components/AppSidebar";
+import { AdminSidebar } from "./_components/AdminSidebar";
 
-export default function AdminLayout({
+export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
-    <>
-      <SidebarProvider>
-        <AdminSidebar />
-        <main className="flex-1">{children}</main>
-      </SidebarProvider>{" "}
-    </>
+    <div className="flex min-h-screen bg-gray-50">
+      <AdminSidebar />
+      {children}
+    </div>
   );
 }

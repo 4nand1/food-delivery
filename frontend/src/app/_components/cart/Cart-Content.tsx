@@ -5,9 +5,10 @@ import { CartItem } from "./Cart-item";
 import { EmptyCart } from "./Empty-cart";
 import { PaymentSummary } from "./Payment-summary";
 import { Button } from "@/components/ui/button";
-import { api } from "@/lib/axios";
+import { api } from "@/lib/axios"; 
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { error } from "console";
 import { toast } from "sonner";
 
 interface CartContentProps {
@@ -30,33 +31,22 @@ export function CartContent({
 
   const ToOrder = async () => {
     if (delivery === "") return toast.error("Haygaa oruulache");
-
-    const accessToken = localStorage.getItem("accessToken");
-    if (!accessToken) {
-      toast.error("Login hiij orno uu");
-      return;
-    }
-
-    try {
-      await api.post(
-        "/orders/create",
-        {
-          orderItems: cartItems.map((item: CartItemType) => ({
-            foodId: item._id,
-            quantity: item.quantity,
-            price: item.price,
-          })),
-          address: delivery,
+    await api.post(
+      "/orders/create",
+      {
+        orderItems: cartItems.map((item: CartItemType) => ({
+          foodId: item._id,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+        address: delivery,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
-    } catch (err) {
-      toast.error("Order ilgeehd aldaa garsan");
-    }
+      },
+    );
   };
   return (
     <>

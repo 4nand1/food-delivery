@@ -1,18 +1,16 @@
 import type { RequestHandler } from "express";
-import { OrderModel } from "../../database/schema/order.scema.js"
+import { OrderModel } from "../../database/schema/order.schema.js";
 
-export const getUserOrders: RequestHandler = async (req, res) => {
-    const userId = req.userId;
+export const getUserOrder: RequestHandler = async (req, res) => {
+  const userId = req.userId;
 
-    if (!userId) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
+  if (!userId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
 
-    const orders = await OrderModel
-    .find({ userId })
-    .populate("foods.foodId")
+  const orders = await OrderModel.find({ userId })
+    .populate("orderItems.foodId")
     .populate("userId");
 
-    res.status(200).json(orders);
-  
-}
+  res.status(200).json(orders);
+};

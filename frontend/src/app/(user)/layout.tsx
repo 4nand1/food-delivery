@@ -1,17 +1,22 @@
-import { ReactNode } from "react";
+import { Toaster } from "@/components/ui/sonner";
+import { Footer } from "../_components/footer/Footer";
+import { Header } from "../_components/header/Header";
+import { CartProvider, useCart } from "@/context/Cart-context";
 
-import  { CartDrawer } from "@/app/_components/cart/Cart-drawer";
-import { Header } from "@/app/_components/header/Header";
-import { Footer } from "@/app/_components/footer/Footer";
-
-
-export default function UserLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <div>
-      <Header />
+      <Header
+      // totalItems={getTotalItems()}
+      // onCartClick={() => setIsCartOpen(true)}
+      />
       {children}
-      <Footer/>
-      <CartDrawer />
+      <Toaster position="top-center" richColors />
+      <Footer />
     </div>
   );
 }
