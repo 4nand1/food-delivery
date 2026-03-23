@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
-import { Food } from "@/app/(admin)/admin/_components/CategoryFoods";
+import { Food } from "@/app/admin/admin/_components/CategoryFoods";
 
 interface Cardtype {
   onAddToCart: (food: FoodItem, quantity: number) => void;

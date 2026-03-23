@@ -1,8 +1,8 @@
-import type { RequestHandler } from "express";
-import { CategoryModel } from "../../database/schema/category.schema.js";
+import { RequestHandler } from "express";
+import { CategoryModel } from "../../database/schema";
 
 export const deleteCategory: RequestHandler = async (req, res) => {
-  const id = req.params.id;
-  const categories = await CategoryModel.findByIdAndDelete(req.params.id);
-  res.status(201).json(categories);
+  const body = req.body;
+  const category = await CategoryModel.deleteOne({ name: body.name });
+  res.status(202).json(category);
 };

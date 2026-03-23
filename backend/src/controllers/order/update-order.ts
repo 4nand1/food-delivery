@@ -1,13 +1,20 @@
-import type { RequestHandler } from "express";
-import { OrderModel } from "../../database/schema/order.schema.js";
+import { RequestHandler } from "express";
+import { OrderModel } from "../../database/schema";
 
-export const updateOrder: RequestHandler = async (req, res) => {
-  const { id } = req.params;
-  const body = req.body;
+export const updateStatus: RequestHandler = async (req, res) => {
+  const { orderIds, status } = req.body;
 
-  const order = await OrderModel.findByIdAndUpdate(id, body, { new: true });
+  if (!Array.isArray(orderIds) || orderIds.length === 0) {
+    return res.status(400).json({ message: "orderIds must be an array" });
+  }
 
-  if (!order) return res.status(404).json({ message: "Order not found" });
+  const result = await OrderModel.updateMany(
+    { _id: { $in: orderIds } },
+    { $set: { status } },
+  );
 
-  return res.status(200).json(order);
+  res.status(200).json({
+    matched: result.matchedCount,
+    modified: result.modifiedCount,
+  });
 };

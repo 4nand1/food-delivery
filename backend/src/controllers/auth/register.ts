@@ -1,27 +1,21 @@
-import type { RequestHandler } from "express";
-import { UserModel } from "../../database/schema/user.schema.js";
-
+import { RequestHandler } from "express";
+import { UserModel } from "../../database/schema";
 
 export const register: RequestHandler = async (req, res) => {
-  const { username, password, email } = req.body;
+  const { password, email, role } = req.body;
 
-  const isUsernameExist = await UserModel.findOne({ username });
-
-  if (isUsernameExist)
-    return res.status(400).json({ message: "Username already exist" });
-
-  const isEmailExist = await UserModel.findOne({ email });
-
-  if (isEmailExist)
-    return res.status(400).json({ message: "Email already exist" });
+  const isUserEmailEx = await UserModel.findOne({ email });
+  if (isUserEmailEx)
+    return res.status(404).json({ message: "Email already exists" });
+  console.log("===============");
 
   const user = await UserModel.create({
-    username,
     password,
     email,
+    role,
   });
 
-  res.status(200).json({
-    user,
-  });
+  console.log("===========", user);
+
+  res.status(200).json({ user });
 };

@@ -1,5 +1,4 @@
-export * from './food.router.js'
-export * from './category.router.js'
-export * from './auth.router.js'
-export * from './order.router.js'
-
+export * from "./category.routes";
+export * from "./food.routes";
+export * from "./auth.routes";
+export * from "./order.routes";

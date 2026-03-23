@@ -1,5 +1,4 @@
-import { model, Schema } from "mongoose";
-import { ref } from "node:process";
+import { Schema, model } from "mongoose";
 
 const orderSchema = new Schema(
   {
@@ -12,7 +11,7 @@ const orderSchema = new Schema(
       },
     ],
     status: { type: String, required: true, default: "pending" },
-    address: { type: String, required: true, default: "Sbd negdsen emneleg" },
+    address: { type: String, required: true },
   },
   { timestamps: true },
 );

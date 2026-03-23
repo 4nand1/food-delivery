@@ -1,24 +1,23 @@
-import express from 'express'
-import { connectToDatabase } from './database/index.js'
-import { AuthRouter, CategoryRouter, FoodRouter } from './routes/index.js'
+import express from "express";
+import { connectToDatabase } from "./database";
+import { FoodRouter } from "./routes/food.routes";
+import { CategoryRouter } from "./routes/category.routes";
+import cors from "cors";
+import { AuthRouter, OrderRouter } from "./routes";
 
-import cors from 'cors'
-import { OrderRouter } from './routes/order.router.js'
+await connectToDatabase();
 
+const app = express();
 
+const port = 4000;
+app.use(express.json());
+app.use(cors());
 
-await  connectToDatabase()
+app.use("/foods", FoodRouter);
+app.use("/categories", CategoryRouter);
+app.use("/auth", AuthRouter);
+app.use("/order", OrderRouter);
 
-const app = express()
-app.use(cors())
-app.use(express.json())
-
-app.use('/foods',FoodRouter)
-app.use('/categories',CategoryRouter)
-app.use('/orders',OrderRouter)
-app.use('/auth',AuthRouter)
-
-app.listen(4000, () => {
-  console.log(`Example app listening on port 4000`)
-})
-
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`);
+});
