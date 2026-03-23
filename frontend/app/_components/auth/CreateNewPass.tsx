@@ -18,7 +18,7 @@ import { Header } from "./Header";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useContext, useState } from "react";
-import { StepContext } from "@/app/Signup/page";
+import { StepContext } from "./CreateAcc";
 import { Jumper } from "./Jumper";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/(client)/context/AuthProvider";

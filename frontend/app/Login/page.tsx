@@ -1,18 +1,10 @@
 "use client";
 
-import { Dispatch, SetStateAction, useState, createContext } from "react";
+import { useState } from "react";
 import { CreateNew } from "../_components/auth/CreateNew";
-import { Login } from "../_components/auth/Login";
+import { Login, StepContext } from "../_components/auth/Login";
 import { Forgot } from "../_components/auth/Forgot";
 import { Verify } from "../_components/auth/Verify";
-
-export type StepContextType = {
-  setStep: Dispatch<SetStateAction<number>>;
-};
-
-export const StepContext = createContext<StepContextType>(
-  {} as StepContextType,
-);
 
 export default function Home() {
   const [step, setStep] = useState<number>(1);

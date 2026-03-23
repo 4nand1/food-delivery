@@ -4,6 +4,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { ChevronLeft } from "lucide-react";
+import {
+  createContext,
+  type Dispatch,
+  type SetStateAction,
+  useContext,
+} from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,9 +21,21 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Header } from "./Header";
-import { useContext } from "react";
-import { StepContext } from "@/app/Signup/page";
 import { Jumper } from "./Jumper";
+
+export type StepContextType = {
+  setStep: Dispatch<SetStateAction<number>>;
+  setData: Dispatch<
+    SetStateAction<{
+      email: string;
+    }>
+  >;
+  data: { email: string };
+};
+
+export const StepContext = createContext<StepContextType>(
+  {} as StepContextType,
+);
 
 const formSchema = z.object({
   Email: z

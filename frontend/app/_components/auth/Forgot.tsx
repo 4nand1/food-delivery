@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Header } from "./Header";
 import { useContext } from "react";
-import { StepContext } from "@/app/Login/page";
+import { StepContext } from "./Login";
 import { Jumper } from "./Jumper";
 
 const formSchema = z.object({

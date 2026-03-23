@@ -15,12 +15,22 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Header } from "./Header";
-import { FormEvent, useContext, useEffect } from "react";
-import { StepContext } from "@/app/Login/page";
+import {
+  Dispatch,
+  SetStateAction,
+  createContext,
+  useContext,
+} from "react";
 import { Jumper } from "./Jumper";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/(client)/context/AuthProvider";
-import { toast } from "sonner";
+
+export type StepContextType = {
+  setStep: Dispatch<SetStateAction<number>>;
+};
+
+export const StepContext = createContext<StepContextType>(
+  {} as StepContextType,
+);
 
 const formSchema = z.object({
   Email: z.string(),
@@ -35,7 +45,6 @@ const formSchema = z.object({
 export const Login = () => {
   const { setStep } = useContext(StepContext);
   const { login, messageL } = useAuth();
-  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { Header } from "./Header";
-import { StepContext } from "@/app/Login/page";
+import { StepContext } from "./Login";
 import { useContext } from "react";
 export const Verify = () => {
   const { setStep } = useContext(StepContext);
