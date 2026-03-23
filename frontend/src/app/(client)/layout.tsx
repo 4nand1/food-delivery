@@ -1,6 +1,6 @@
 import { Toaster } from "@/components/ui/sonner";
-import { Footer } from "../_components/footer/Footer";
-import { Header } from "../_components/header/Header";
+import { Footer } from "./_components/footer/Footer";
+import { Header } from "./_components/header/Header";
 import { CartProvider, useCart } from "@/context/Cart-context";
 
 export default function RootLayout({

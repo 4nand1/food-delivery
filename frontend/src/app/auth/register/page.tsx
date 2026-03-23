@@ -1,7 +1,7 @@
 "use client";
 
-import { FirstStep } from "@/app/_components/signupsteps/firststep";
-import { SecondStep } from "@/app/_components/signupsteps/secondstep";
+import { FirstStep } from "../_components/signupsteps/firststep";
+import { SecondStep } from "../_components/signupsteps/secondstep";
 import { useAuth } from "@/context/AuthProvider";
 import { useState } from "react";
 

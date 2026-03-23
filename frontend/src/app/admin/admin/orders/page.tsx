@@ -1,6 +1,6 @@
 "use client";
 
-import { OrderContentType } from "@/app/_components/cart/Order-Content";
+import { OrderContentType } from "@/app/(client)/_components/cart/Order-Content";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";

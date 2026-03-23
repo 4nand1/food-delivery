@@ -1,5 +1,5 @@
 "use client";
-import { MenuSection } from "../_components/menu/MenuSection";
+import { MenuSection } from "./_components/menu/MenuSection";
 import { api } from "@/lib/axios";
 import { Category } from "../admin/admin/_components/CreateFoodDialog";
 import { useEffect, useState } from "react";
