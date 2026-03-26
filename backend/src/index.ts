@@ -5,7 +5,7 @@ import { CategoryRouter } from "./routes/category.routes";
 import cors from "cors";
 import { AuthRouter, OrderRouter } from "./routes";
 
-await connectToDatabase();
+connectToDatabase();
 
 const app = express();
 
