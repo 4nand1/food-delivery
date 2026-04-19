@@ -1,5 +1,8 @@
-import { connect } from 'mongoose'
+import { connect } from "mongoose";
+import { env } from "../config/env";
+import { seedDatabase } from "./seed";
 
 export const connectToDatabase = async () => {
-    await connect('mongodb+srv://Anand:UlD2N3PzC2jydjth@cluster1.evz3dmj.mongodb.net/?appName=Cluster1')
-}
+  await connect(env.mongoUrl);
+  await seedDatabase();
+};

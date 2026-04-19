@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { UserModel } from "../../database/schema";
 import jwt from "jsonwebtoken";
+import { env } from "../../config/env";
 
 export const login: RequestHandler = async (req, res) => {
   const { email, password } = req.body;
@@ -14,7 +15,7 @@ export const login: RequestHandler = async (req, res) => {
   if (UserPassword !== password)
     return res.status(401).json({ message: "Username or password wrong" });
 
-  const accessToken = jwt.sign({ user: rest }, "67");
+  const accessToken = jwt.sign({ user: rest }, env.jwtSecret);
   return res.status(200).json({
     user: rest,
     accessToken,

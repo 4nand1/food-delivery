@@ -3,6 +3,7 @@ import { UserModel } from "../../database/schema";
 
 export const register: RequestHandler = async (req, res) => {
   const { password, email, role } = req.body;
+  const username = email;
 
   const isUserEmailEx = await UserModel.findOne({ email });
   if (isUserEmailEx)
@@ -10,9 +11,10 @@ export const register: RequestHandler = async (req, res) => {
   console.log("===============");
 
   const user = await UserModel.create({
+    username,
     password,
     email,
-    role,
+    role: role ?? "customer",
   });
 
   console.log("===========", user);

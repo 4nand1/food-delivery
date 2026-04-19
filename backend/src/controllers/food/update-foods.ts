@@ -4,8 +4,15 @@ import { FoodModel } from "../../database/schema/food.schema";
 export const updateFood: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
+    const normalizedBody = {
+      ...req.body,
+      categoryId:
+        req.body.categoryId === "uncategorized" || req.body.categoryId === ""
+          ? null
+          : req.body.categoryId,
+    };
 
-    const updatedFood = await FoodModel.findByIdAndUpdate(id, req.body, {
+    const updatedFood = await FoodModel.findByIdAndUpdate(id, normalizedBody, {
       new: true,
       runValidators: true,
     });

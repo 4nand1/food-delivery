@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import jwt from "jsonwebtoken";
+import { env } from "../config/env";
 
 export const authMiddleware: RequestHandler = (req, res, next) => {
   const authorization = req.headers.authorization;
@@ -8,7 +9,7 @@ export const authMiddleware: RequestHandler = (req, res, next) => {
   const token = authorization.split(" ")[1] as string;
 
   try {
-    const { user } = jwt.verify(token, "67") as {
+    const { user } = jwt.verify(token, env.jwtSecret) as {
       user: { _id: string };
     };
 
