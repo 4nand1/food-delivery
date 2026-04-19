@@ -121,8 +121,8 @@ export const HeaderMain = () => {
                   <ShoppingCart />
                 </Button>
               </DrawerTrigger>
-              <DrawerContent className="rounded-4xl bg-[#404040] border-l-[#404040] min-w-133.75 h-256 p-6">
-                <DrawerHeader>
+              <DrawerContent className="rounded-4xl bg-[#404040] border-l-[#404040] min-w-133.75 h-screen max-h-screen overflow-hidden p-6">
+                <DrawerHeader className="shrink-0 p-0">
                   <DrawerTitle className="flex gap-2 mb-6">
                     <ShoppingCart className="text-white w-6 h-6 font-bold" />
                     <p className=" text-white text-5 font-semibold">
@@ -140,8 +140,10 @@ export const HeaderMain = () => {
                       </Button>
                     </DrawerClose>
                   </DrawerTitle>
-                  <CartInfo />
                 </DrawerHeader>
+                <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+                  <CartInfo />
+                </div>
               </DrawerContent>
             </Drawer>
             <DropdownMenu>

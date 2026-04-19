@@ -1,11 +1,5 @@
 "use client";
-import {
-  Dispatch,
-  ReactNode,
-  SetStateAction,
-  useContext,
-  useState,
-} from "react";
+import { ReactNode, useContext, useState } from "react";
 import { foodType } from "../_components/CartInfo";
 import { createContext } from "react";
 
@@ -24,7 +18,7 @@ export type Food = {
   price: number;
   image: string;
   ingredients: string;
-  categoryId: { _id: string; name: string };
+  categoryId?: { _id: string; name: string } | null;
 };
 const CartContext = createContext<CartContextType>({} as CartContextType);
 

@@ -88,7 +88,7 @@ export const CreateAcc = () => {
             />
           </div>
           <Button type="submit" className="w-full">
-            Let's Go
+            Let&apos;s Go
           </Button>
           <Jumper value={"sign"} />
         </form>

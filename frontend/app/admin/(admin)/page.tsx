@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Pagi } from "./_components/Pagi";
 import { Profile } from "./_components/Profile";
 import {
@@ -20,33 +20,35 @@ export default function Home() {
     lt: "",
   });
   const pageSize = 10;
-  const getOrders = async () => {
-    const { data } = await api.get("/order/all", {
-      params: {
-        ...(filter.gt && { gt: filter.gt }),
-        ...(filter.lt && { lt: filter.lt }),
-      },
-    });
-
-    const ordersWithCheck = data.map((prev: orderType) => ({
-      ...prev,
-      checked: false,
-    }));
-
-    setInfo(ordersWithCheck);
-  };
 
   useEffect(() => {
-    getOrders();
+    void (async () => {
+      const { data } = await api.get<orderType[]>("/order/all", {
+        params: {
+          ...(filter.gt && { gt: filter.gt }),
+          ...(filter.lt && { lt: filter.lt }),
+        },
+      });
+
+      setInfo(
+        data.map((prev) => ({
+          ...prev,
+          checked: false,
+        })),
+      );
+    })();
   }, [filter]);
+
+  const pagedInformation = useMemo(
+    () => information.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
+    [information, pageNumber],
+  );
+
   return (
     <div className="w-full flex flex-col gap-10 bg-[#E4E4E7] px-7">
       <Profile />
       <TableComp
-        information={information.slice(
-          (pageNumber - 1) * pageSize,
-          pageNumber * pageSize,
-        )}
+        information={pagedInformation}
         setInfo={setInfo}
         setFilter={setFilter}
       />

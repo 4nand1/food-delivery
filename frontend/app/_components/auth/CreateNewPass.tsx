@@ -20,9 +20,7 @@ import { Label } from "@/components/ui/label";
 import { useContext, useState } from "react";
 import { StepContext } from "./CreateAcc";
 import { Jumper } from "./Jumper";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/(client)/context/AuthProvider";
-import { toast } from "sonner";
 
 const formSchema = z
   .object({
@@ -43,7 +41,6 @@ export const CreateNewPass = () => {
   const { setStep, data } = useContext(StepContext);
   const [see, setSee] = useState<boolean>(false);
   const { register } = useAuth();
-  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -119,7 +116,7 @@ export const CreateNewPass = () => {
             </div>
           </div>
           <Button type="submit" className="w-full">
-            Let's Go
+            Let&apos;s Go
           </Button>
           {/* <p className="text-[#71717A] w-full flex gap-3 justify-center">
             Already have an account?

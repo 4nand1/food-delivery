@@ -33,13 +33,14 @@ import {
 } from "@/components/ui/select";
 import { api } from "@/lib/axios";
 import { toast } from "sonner";
+import axios from "axios";
 
 const formSchema = z.object({
-  foodName: z.string(),
-  foodPrice: z.string(),
-  dishCata: z.string(),
-  ingre: z.string(),
-  image: z.any(),
+  foodName: z.string().min(1, "Food name is required"),
+  foodPrice: z.coerce.number().positive("Price must be greater than 0"),
+  dishCata: z.string().optional(),
+  ingre: z.string().min(1, "Ingredients are required"),
+  image: z.string().min(1, "Food image is required"),
 });
 export type foodInfo = {
   foodName: string;
@@ -63,23 +64,39 @@ export type dataTypeMap = {
   mapData: foodArr[];
   setAllstate: Dispatch<SetStateAction<boolean>>;
   allState: boolean;
+  onFoodsChange: () => Promise<void>;
 };
 
-export const CataAdd = ({ mapData, setAllstate, allState }: dataTypeMap) => {
+export const CataAdd = ({
+  mapData,
+  setAllstate,
+  allState,
+  onFoodsChange,
+}: dataTypeMap) => {
   const [preview, setPreview] = useState<string>("");
   const [uploading, setUploading] = useState<boolean>(false);
-  const removeImg = () => {
-    setPreview("");
+  const normalizeCategoryId = (categoryId?: string | null) => {
+    if (!categoryId || categoryId === "uncategorized") return null;
+    return categoryId;
   };
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const removeImg = () => {
+    setPreview("");
+    form.setValue("image", "");
+  };
+
+  const form = useForm<
+    z.input<typeof formSchema>,
+    unknown,
+    z.output<typeof formSchema>
+  >({
     resolver: zodResolver(formSchema),
     defaultValues: {
       foodName: "",
-      foodPrice: "",
-      dishCata: "",
+      foodPrice: 0,
+      dishCata: undefined,
       ingre: "",
-      // image: "",
+      image: "",
     },
   });
 
@@ -116,18 +133,36 @@ export const CataAdd = ({ mapData, setAllstate, allState }: dataTypeMap) => {
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await api.post("/foods/create", {
-      name: values.foodName,
-      price: values.foodPrice,
-      ingredients: values.ingre,
-      image: values.image,
-      categoryId: values.dishCata,
-    });
-    form.reset();
-    setPreview("");
-    toast("New Food is being added to the menu!", {
-      position: "top-center",
-    });
+    try {
+      await api.post("/foods/create", {
+        name: values.foodName,
+        price: values.foodPrice,
+        ingredients: values.ingre,
+        image: values.image,
+        categoryId: normalizeCategoryId(values.dishCata),
+      });
+      await onFoodsChange();
+      form.reset({
+        foodName: "",
+        foodPrice: 0,
+        dishCata: undefined,
+        ingre: "",
+        image: "",
+      });
+      setPreview("");
+      toast("New Food is being added to the menu!", {
+        position: "top-center",
+      });
+    } catch (error) {
+      const message =
+        axios.isAxiosError<{ message?: string }>(error) &&
+        error.response?.data?.message
+          ? error.response.data.message
+          : "Failed to add food";
+      toast.error(message, {
+        position: "top-center",
+      });
+    }
   }
 
   return (
@@ -160,6 +195,7 @@ export const CataAdd = ({ mapData, setAllstate, allState }: dataTypeMap) => {
                       <DialogClose asChild>
                         <Button
                           size="icon"
+                          type="button"
                           variant={"outline"}
                           className="absolute rounded-full right-4 top-4"
                         >
@@ -200,8 +236,19 @@ export const CataAdd = ({ mapData, setAllstate, allState }: dataTypeMap) => {
                                     <FormLabel>Food price</FormLabel>
                                     <FormControl>
                                       <Input
+                                        type="number"
                                         placeholder="Enter price..."
-                                        {...field}
+                                        value={
+                                          typeof field.value === "number"
+                                            ? field.value
+                                            : ""
+                                        }
+                                        onChange={(event) =>
+                                          field.onChange(event.target.valueAsNumber)
+                                        }
+                                        onBlur={field.onBlur}
+                                        name={field.name}
+                                        ref={field.ref}
                                       />
                                     </FormControl>
 
@@ -289,6 +336,7 @@ export const CataAdd = ({ mapData, setAllstate, allState }: dataTypeMap) => {
                                         />
                                         <Button
                                           size="icon"
+                                          type="button"
                                           variant="outline"
                                           className="rounded-full absolute right-2 top-2 z-2"
                                           onClick={() => removeImg()}
@@ -328,7 +376,12 @@ export const CataAdd = ({ mapData, setAllstate, allState }: dataTypeMap) => {
                 {ele.food.map((ell) => {
                   return (
                     <div key={ell.foodId + ele.id} className="h-60.25 w-[19%]">
-                      <Cart ell={ell} mapData={mapData} ele={ele} />
+                      <Cart
+                        ell={ell}
+                        mapData={mapData}
+                        ele={ele}
+                        onFoodsChange={onFoodsChange}
+                      />
                     </div>
                   );
                 })}
@@ -362,6 +415,7 @@ export const CataAdd = ({ mapData, setAllstate, allState }: dataTypeMap) => {
                       <DialogClose asChild>
                         <Button
                           size="icon"
+                          type="button"
                           variant={"outline"}
                           className="absolute rounded-full right-4 top-4"
                         >
@@ -402,8 +456,19 @@ export const CataAdd = ({ mapData, setAllstate, allState }: dataTypeMap) => {
                                     <FormLabel>Food price</FormLabel>
                                     <FormControl>
                                       <Input
+                                        type="number"
                                         placeholder="Enter price..."
-                                        {...field}
+                                        value={
+                                          typeof field.value === "number"
+                                            ? field.value
+                                            : ""
+                                        }
+                                        onChange={(event) =>
+                                          field.onChange(event.target.valueAsNumber)
+                                        }
+                                        onBlur={field.onBlur}
+                                        name={field.name}
+                                        ref={field.ref}
                                       />
                                     </FormControl>
 
@@ -491,6 +556,7 @@ export const CataAdd = ({ mapData, setAllstate, allState }: dataTypeMap) => {
                                         />
                                         <Button
                                           size="icon"
+                                          type="button"
                                           variant="outline"
                                           className="rounded-full absolute right-2 top-2 z-2"
                                           onClick={() => removeImg()}
@@ -518,9 +584,7 @@ export const CataAdd = ({ mapData, setAllstate, allState }: dataTypeMap) => {
                               )}
                             />
                             <div className="flex w-full justify-end">
-                              <DialogClose asChild>
-                                <Button type="submit">Submit</Button>
-                              </DialogClose>
+                              <Button type="submit">Submit</Button>
                             </div>
                           </form>
                         </Form>
@@ -532,7 +596,12 @@ export const CataAdd = ({ mapData, setAllstate, allState }: dataTypeMap) => {
                 {ele.food.map((ell) => {
                   return (
                     <div key={ell.foodId + ele.id} className="h-60.25 w-[19%]">
-                      <Cart ell={ell} mapData={mapData} ele={ele} />
+                      <Cart
+                        ell={ell}
+                        mapData={mapData}
+                        ele={ele}
+                        onFoodsChange={onFoodsChange}
+                      />
                     </div>
                   );
                 })}

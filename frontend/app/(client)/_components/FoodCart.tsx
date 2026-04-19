@@ -12,26 +12,33 @@ import {
 } from "@/components/ui/dialog";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { useCart } from "../context/cart-context";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { foodType } from "./CartInfo";
 import { toast } from "sonner";
 export type Props = {
   id: string;
-  setOrder: Dispatch<SetStateAction<foodType[]>>;
+  setOrder?: Dispatch<SetStateAction<foodType[]>>;
   orderInfo: foodType[];
 };
 
-export const FoodCart = (props: Props) => {
+export const FoodCart = ({ id, setOrder, orderInfo }: Props) => {
   const { addToCart, removeCart, cartItems, updateQuantity } = useCart();
-  const isCarted = !cartItems.some((item) => item._id === props.id);
-  useEffect(() => {
-    props.setOrder((prev) =>
-      prev.map((item) =>
-        item._id === props.id ? { ...item, quantity: item.quantity } : item,
-      ),
-    );
-  }, [cartItems]);
   const [quantity, setQuantity] = useState<number>(1);
+  const selectedFood = useMemo(
+    () => orderInfo.find((item) => item._id === id),
+    [id, orderInfo],
+  );
+  const isCarted = !cartItems.some((item) => item._id === id);
+
+  useEffect(() => {
+    if (!setOrder) return;
+
+    setOrder((prev) =>
+      prev.map((item) => (item._id === id ? { ...item, quantity } : item)),
+    );
+  }, [cartItems, id, quantity, setOrder]);
+
+  if (!selectedFood) return null;
 
   return (
     <div className="relative">
@@ -40,31 +47,16 @@ export const FoodCart = (props: Props) => {
           <div>
             <Card className="p-4 w-99.25 h-85.5 gap-1.25">
               <CardHeader className="p-0">
-                <img
-                  className="w-full h-52.5 rounded-xl"
-                  src={
-                    props.orderInfo.filter((ele) => ele._id == props.id)[0]
-                      .image
-                  }
-                />
+                <img className="w-full h-52.5 rounded-xl" src={selectedFood.image} />
               </CardHeader>
               <CardFooter className="p-0 flex-col">
                 <p className="text-[#EF4444] text-[24px] font-semibold w-full flex justify-between">
-                  {props.orderInfo.filter((ele) => ele._id == props.id)[0].name}
+                  {selectedFood.name}
                   <span className="text-black text-[18px]">
-                    $
-                    {
-                      props.orderInfo.filter((ele) => ele._id == props.id)[0]
-                        .price
-                    }
+                    ${selectedFood.price}
                   </span>
                 </p>
-                <p className="text-[14px] text-start">
-                  {
-                    props.orderInfo.filter((ele) => ele._id == props.id)[0]
-                      .ingredients
-                  }
-                </p>
+                <p className="text-[14px] text-start">{selectedFood.ingredients}</p>
               </CardFooter>
             </Card>
           </div>
@@ -72,12 +64,7 @@ export const FoodCart = (props: Props) => {
         <DialogContent className="min-w-206.5" showCloseButton={false}>
           <DialogTitle className="hidden" />
           <DialogHeader className="flex-row gap-6 min-w-200 ">
-            <img
-              className="w-[46.7%] h-91"
-              src={
-                props.orderInfo.filter((ele) => ele._id == props.id)[0].image
-              }
-            />
+            <img className="w-[46.7%] h-91" src={selectedFood.image} />
             <div className="w-[46.7%] h-91 flex flex-col justify-between">
               <div>
                 <div className="w-full flex justify-end">
@@ -94,13 +81,10 @@ export const FoodCart = (props: Props) => {
                 </div>
                 <div className="w-full flex justify-end"></div>
                 <p className="text-[#EF4444] text-[30px] font-semibold w-full flex justify-between">
-                  {props.orderInfo.filter((ele) => ele._id == props.id)[0].name}
+                  {selectedFood.name}
                 </p>
                 <p className="text-[16px] text-start pt-3">
-                  {
-                    props.orderInfo.filter((ele) => ele._id == props.id)[0]
-                      .ingredients
-                  }
+                  {selectedFood.ingredients}
                 </p>
               </div>
               <div className="flex flex-col gap-6 w-full">
@@ -108,11 +92,7 @@ export const FoodCart = (props: Props) => {
                   <p className="text-4 flex flex-col">
                     Total price
                     <span className="font-semibold text-[24px]">
-                      $
-                      {(
-                        props.orderInfo.filter((ele) => ele._id == props.id)[0]
-                          .price * quantity
-                      ).toFixed(2)}
+                      ${(selectedFood.price * quantity).toFixed(2)}
                     </span>
                   </p>
                   <div className="flex gap-3 items-center">
@@ -144,10 +124,8 @@ export const FoodCart = (props: Props) => {
                   <Button
                     className="rounded-full"
                     onClick={() => {
-                      addToCart(
-                        props.orderInfo.filter((ele) => ele._id == props.id)[0],
-                      );
-                      updateQuantity(props.id, quantity);
+                      addToCart(selectedFood);
+                      updateQuantity(id, quantity);
                       setQuantity(1);
                       toast("Food is being added to the cart!", {
                         position: "top-center",
@@ -170,14 +148,12 @@ export const FoodCart = (props: Props) => {
         }`}
         onClick={() => {
           if (isCarted) {
-            const food = props.orderInfo.find((ele) => ele._id === props.id);
-            if (!food) return;
-            addToCart(food);
+            addToCart(selectedFood);
             toast("Food is being added to the cart!", {
               position: "top-center",
             });
           } else {
-            removeCart(props.id);
+            removeCart(id);
             toast("Food is being removed from the cart!", {
               position: "top-center",
             });

@@ -1,7 +1,7 @@
 "use client";
 
 import { api } from "@/lib/axios";
-import { error } from "console";
+import axios from "axios";
 import { useRouter } from "next/navigation";
 import {
   PropsWithChildren,
@@ -14,6 +14,7 @@ import { toast } from "sonner";
 
 type AuthContextType = {
   user: User | null;
+  isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   signout: () => void;
@@ -38,6 +39,7 @@ export const AuthContext = createContext({} as AuthContextType);
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [messageL, setMessage] = useState<string | null>(null);
   const router = useRouter();
   const login = async (email: string, password: string): Promise<void> => {
@@ -63,10 +65,12 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
           position: "top-center",
         });
       }
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage =
-        error.response?.data?.message ||
-        "Login failed. Please check your credentials.";
+        axios.isAxiosError<{ message?: string }>(error)
+          ? error.response?.data?.message ||
+            "Login failed. Please check your credentials."
+          : "Login failed. Please check your credentials.";
       toast.error("Login failed", {
         position: "top-center",
       });
@@ -87,7 +91,12 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         position: "top-center",
       });
     } catch (error) {
-      toast.error("Email exists", {
+      const message =
+        axios.isAxiosError<{ message?: string }>(error) &&
+        error.response?.data?.message
+          ? error.response.data.message
+          : "Registration failed";
+      toast.error(message, {
         position: "top-center",
       });
       throw error;
@@ -95,7 +104,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   };
 
   const updateUser = async () => {
-    const { data } = await api.get("/auth/user");
+    const { data } = await api.get<{ newUser: User }>("/auth/user");
     setUser(data.newUser);
   };
 
@@ -109,17 +118,28 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
     setUser(data.user);
   };
+
   useEffect(() => {
     const fetchMe = async () => {
+      const accessToken = localStorage.getItem("accessToken");
+
+      if (!accessToken) {
+        setIsLoading(false);
+        return;
+      }
+
       try {
-        getMe();
+        await getMe();
       } catch {
         localStorage.removeItem("accessToken");
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchMe();
+    void fetchMe();
   }, []);
+
   const signout = () => {
     localStorage.removeItem("accessToken");
     setUser(null);
@@ -127,7 +147,16 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, login, register, signout, getMe, updateUser, messageL }}
+      value={{
+        user,
+        isLoading,
+        login,
+        register,
+        signout,
+        getMe,
+        updateUser,
+        messageL,
+      }}
     >
       {children}
     </AuthContext.Provider>

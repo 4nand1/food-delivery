@@ -11,10 +11,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarDays, ChevronDown, ChevronsUpDown, X } from "lucide-react";
+import {
+  CalendarDays,
+  ChevronDown,
+  ChevronsUpDown,
+  Trash2,
+  X,
+} from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -38,6 +44,7 @@ import {
 } from "@/components/ui/dialog";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { api } from "@/lib/axios";
+import axios from "axios";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,6 +52,7 @@ import {
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { addDays } from "date-fns";
+import { toast } from "sonner";
 export type foodType = {
   _id: string;
   name: string;
@@ -90,27 +98,36 @@ type propsType = {
 
 export const TableComp = ({ information, setInfo, setFilter }: propsType) => {
   const [stateMe, setState] = useState<string>("pending");
+  const selectedOrders = information.filter((item) => item.checked);
+  const allSelected =
+    information.length > 0 && information.every((item) => item.checked);
+  const someSelected = information.some((item) => item.checked);
+
   const toggleCheck = (index: string, checked: boolean) => {
     setInfo((prev) =>
-      prev.map((item, i) =>
-        item._id === index ? { ...item, checked: checked } : item,
+      prev.map((item) => (item._id === index ? { ...item, checked } : item)),
+    );
+  };
+  const toggleCheckAll = (checked: boolean) => {
+    const visibleOrderIds = information.map((item) => item._id);
+
+    setInfo((prev) =>
+      prev.map((item) =>
+        visibleOrderIds.includes(item._id) ? { ...item, checked } : item,
       ),
     );
-    console.log(information);
   };
   const changeState = async (checkedArr: orderWithCheckType[]) => {
-    checkedArr.map((ele) => {
-      setInfo((prev) =>
-        prev.map((item, i) =>
-          item._id === ele._id
-            ? { ...item, status: stateMe, checked: false }
-            : item,
-        ),
-      );
-    });
     const orderIds = checkedArr.map((order) => order._id);
+    setInfo((prev) =>
+      prev.map((item) =>
+        orderIds.includes(item._id)
+          ? { ...item, status: stateMe, checked: false }
+          : item,
+      ),
+    );
     await api.patch("/order/status", {
-      orderIds: orderIds,
+      orderIds,
       status: stateMe,
     });
   };
@@ -125,6 +142,41 @@ export const TableComp = ({ information, setInfo, setFilter }: propsType) => {
       status: value,
     });
   };
+
+  const deleteOrdersByIds = async (orderIds: string[]) => {
+    if (orderIds.length === 0) {
+      toast.error("Select at least one order to delete", {
+        position: "top-center",
+      });
+      return;
+    }
+
+    try {
+      await api.delete("/order", {
+        data: { orderIds },
+      });
+      setInfo((prev) => prev.filter((item) => !orderIds.includes(item._id)));
+      toast.success("Selected orders deleted", {
+        position: "top-center",
+      });
+    } catch (error) {
+      const message =
+        axios.isAxiosError<{ message?: string }>(error) &&
+        error.response?.data?.message
+          ? error.response.data.message
+          : "Failed to delete orders";
+      toast.error(message, {
+        position: "top-center",
+      });
+    }
+  };
+  const deleteSelectedOrders = async () => {
+    await deleteOrdersByIds(selectedOrders.map((order) => order._id));
+  };
+  const deleteSingleOrder = async (orderId: string) => {
+    await deleteOrdersByIds([orderId]);
+  };
+
   const [open, setOpen] = useState(false);
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>({
     from: new Date(new Date().getFullYear(), 0, 12),
@@ -141,6 +193,18 @@ export const TableComp = ({ information, setInfo, setFilter }: propsType) => {
           </span>
         </h1>
         <div className="flex gap-3">
+          <Button
+            variant="destructive"
+            className="rounded-full"
+            onClick={deleteSelectedOrders}
+            disabled={selectedOrders.length === 0}
+          >
+            <Trash2 />
+            Delete orders
+            <p className="rounded-full bg-white px-2 text-black">
+              {selectedOrders.length}
+            </p>
+          </Button>
           <DropdownMenu open={open} onOpenChange={setOpen}>
             <DropdownMenuTrigger asChild>
               <Button className="rounded-full" variant={"outline"}>
@@ -156,7 +220,7 @@ export const TableComp = ({ information, setInfo, setFilter }: propsType) => {
                 selected={dateRange}
                 onSelect={setDateRange}
                 numberOfMonths={2}
-                disabled={(date: any) =>
+                disabled={(date: Date) =>
                   date > new Date() || date < new Date("1900-01-01")
                 }
                 className="rounded-xl"
@@ -181,7 +245,7 @@ export const TableComp = ({ information, setInfo, setFilter }: propsType) => {
               <Button className="rounded-full">
                 Change delivery state{" "}
                 <p className="rounded-full bg-white text-black px-2">
-                  {information.filter((el) => el.checked).length}
+                  {selectedOrders.length}
                 </p>
               </Button>
             </DialogTrigger>
@@ -248,7 +312,7 @@ export const TableComp = ({ information, setInfo, setFilter }: propsType) => {
                     type="button"
                     className="w-full rounded-full"
                     onClick={() => {
-                      changeState(information.filter((ele) => ele.checked));
+                      changeState(selectedOrders);
                     }}
                   >
                     Save
@@ -264,7 +328,11 @@ export const TableComp = ({ information, setInfo, setFilter }: propsType) => {
           <TableRow>
             <TableHead className="w-12">
               <div>
-                <Checkbox className="border-[#18181B]" />
+                <Checkbox
+                  className="border-[#18181B]"
+                  checked={allSelected ? true : someSelected ? "indeterminate" : false}
+                  onCheckedChange={(checked) => toggleCheckAll(checked === true)}
+                />
               </div>
             </TableHead>
             <TableHead className="w-14 text-[#18181B]">№</TableHead>
@@ -279,6 +347,9 @@ export const TableComp = ({ information, setInfo, setFilter }: propsType) => {
             </TableHead>
             <TableHead className="w-50 flex gap-2 items-center">
               Delivery state <ChevronsUpDown className="w-4 h-4" />
+            </TableHead>
+            <TableHead className="w-16 text-right text-[#71717A]">
+              Action
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -314,7 +385,7 @@ export const TableComp = ({ information, setInfo, setFilter }: propsType) => {
                   </PopoverTrigger>
                   <PopoverContent className="flex flex-col gap-0.5">
                     {ele.orderItems.map((el) => {
-                      return <SmallCart el={el} />;
+                      return <SmallCart key={`${ele._id}-${el._id}`} el={el} />;
                     })}
                   </PopoverContent>
                 </Popover>
@@ -358,6 +429,19 @@ export const TableComp = ({ information, setInfo, setFilter }: propsType) => {
                     <SelectItem value="cancelled">Cancelled</SelectItem>
                   </SelectContent>
                 </Select>
+              </TableCell>
+              <TableCell className="w-16 text-right">
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  className="rounded-full text-red-500 hover:text-red-600 hover:bg-red-50"
+                  onClick={() => {
+                    void deleteSingleOrder(ele._id);
+                  }}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
               </TableCell>
             </TableRow>
           ))}

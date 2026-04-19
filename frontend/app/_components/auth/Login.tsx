@@ -44,7 +44,7 @@ const formSchema = z.object({
 });
 export const Login = () => {
   const { setStep } = useContext(StepContext);
-  const { login, messageL } = useAuth();
+  const { login } = useAuth();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -104,7 +104,7 @@ export const Login = () => {
             </div>
           </div>
           <Button type="submit" className="w-full">
-            Let's Go
+            Let&apos;s Go
           </Button>
           <Jumper value={"log"} />
         </form>

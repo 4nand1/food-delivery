@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2, X } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
+import axios from "axios";
 
 import {
   Dialog,
@@ -35,12 +36,16 @@ export type dataTypeMapToggle = {
   setMap: Dispatch<SetStateAction<foodArr[]>>;
   setAllstate: Dispatch<SetStateAction<boolean>>;
   allState: boolean;
+  onCategoriesChange: () => Promise<void>;
+  onFoodsChange: () => Promise<void>;
 };
 export const ToggleCata = ({
   mapData,
   setMap,
   setAllstate,
   allState,
+  onCategoriesChange,
+  onFoodsChange,
 }: dataTypeMapToggle) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -50,18 +55,28 @@ export const ToggleCata = ({
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await api.post("/categories/create", {
-      name: values.name,
-    });
-    form.reset();
-    toast("New Category is being added to the menu!", {
-      position: "top-center",
-    });
+    try {
+      await api.post("/categories/create", {
+        name: values.name,
+      });
+      await onCategoriesChange();
+      form.reset();
+      toast("New Category is being added to the menu!", {
+        position: "top-center",
+      });
+    } catch (error) {
+      const message =
+        axios.isAxiosError<{ message?: string }>(error) &&
+        error.response?.data?.message
+          ? error.response.data.message
+          : "Failed to create category";
+      toast.error(message, { position: "top-center" });
+    }
   }
   return (
     <div className="flex flex-col gap-4 w-full  rounded-xl p-6 bg-white">
       <h1 className="text-[20px] font-semibold">Dishes category</h1>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Button
           variant="outline"
           className={`rounded-full ${allState ? "border-red-500" : ""}`}
@@ -105,12 +120,23 @@ export const ToggleCata = ({
                   className="rounded-full border-red-500 w-8 h-8"
                   variant={"outline"}
                   onClick={async () => {
-                    await api.delete("/categories/delete", {
-                      data: { name: ele.name },
-                    });
-                    toast("New Category is being deleted!", {
-                      position: "top-center",
-                    });
+                    try {
+                      await api.delete("/categories/delete", {
+                        data: { id: ele.id },
+                      });
+                      await onCategoriesChange();
+                      await onFoodsChange();
+                      toast("New Category is being deleted!", {
+                        position: "top-center",
+                      });
+                    } catch (error) {
+                      const message =
+                        axios.isAxiosError<{ message?: string }>(error) &&
+                        error.response?.data?.message
+                          ? error.response.data.message
+                          : "Failed to delete category";
+                      toast.error(message, { position: "top-center" });
+                    }
                   }}
                 >
                   <Trash2 className="text-red-500" />

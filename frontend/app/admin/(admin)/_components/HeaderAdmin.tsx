@@ -10,7 +10,7 @@ export const HeaderAdmin = () => {
   const params = usePathname();
 
   return (
-    <div className="h-screen w-51.25 px-5 py-9 flex flex-col gap-10">
+    <div className="h-screen w-51.25 shrink-0 px-5 py-9 flex flex-col gap-10 border-r bg-white">
       <div className="flex gap-3 items-center">
         <img src="../logo.png" className="w-9 h-7.25" />{" "}
         <div>

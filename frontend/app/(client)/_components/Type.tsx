@@ -8,29 +8,19 @@ import { foodType } from "./CartInfo";
 
 export const Type = () => {
   const [foods, setFoods] = useState<Food[]>([]);
-  const [orderInfo, setOrder] = useState<foodType[]>([]);
 
   useEffect(() => {
-    const getData = async () => {
-      const { data } = await api.get("/foods", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      });
+    void (async () => {
+      const { data } = await api.get<Food[]>("/foods");
       setFoods(data);
-    };
-    getData();
+    })();
   }, []);
 
-  useEffect(() => {
-    if (foods.length > 0) {
-      setOrder(
-        foods.map((food) => ({
-          ...food,
-          quantity: 1,
-        })),
-      );
-    }
+  const orderInfo = useMemo<foodType[]>(() => {
+    return foods.map((food) => ({
+      ...food,
+      quantity: 1,
+    }));
   }, [foods]);
 
   const categories: string[] = useMemo(() => {
@@ -64,7 +54,6 @@ export const Type = () => {
                     <FoodCart
                       key={index}
                       id={foodele._id}
-                      setOrder={setOrder}
                       orderInfo={orderInfo}
                     />
                   );

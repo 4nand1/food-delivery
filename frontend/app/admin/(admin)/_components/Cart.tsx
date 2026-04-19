@@ -12,7 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { DialogClose } from "@radix-ui/react-dialog";
-import { foodArr, propsType } from "./CataAdd";
+import { propsType } from "./CataAdd";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -36,18 +36,28 @@ import { z } from "zod";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/lib/axios";
 import { toast } from "sonner";
+import axios from "axios";
 
 const formSchema = z.object({
-  dishName: z.string(),
-  dishCata: z.any(),
-  ingre: z.string(),
-  price: z.number(),
-  image: z.any(),
+  dishName: z.string().min(1, "Dish name is required"),
+  dishCata: z.string().nullable().optional(),
+  ingre: z.string().min(1, "Ingredients are required"),
+  price: z.coerce.number().positive("Price must be greater than 0"),
+  image: z.string().nullable().optional(),
 });
 
-export const Cart = ({ ell, mapData, ele }: propsType) => {
+type CartProps = propsType & {
+  onFoodsChange: () => Promise<void>;
+};
+
+export const Cart = ({ ell, mapData, ele, onFoodsChange }: CartProps) => {
   const [preview, setPreview] = useState<string | null>(ell.img);
   const [uploading, setUploading] = useState<boolean>(false);
+  const normalizeCategoryId = (categoryId?: string | null) => {
+    if (!categoryId || categoryId === "uncategorized") return null;
+    return categoryId;
+  };
+
   const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -82,7 +92,11 @@ export const Cart = ({ ell, mapData, ele }: propsType) => {
   const handleRemove = () => {
     setPreview(null);
   };
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<
+    z.input<typeof formSchema>,
+    unknown,
+    z.output<typeof formSchema>
+  >({
     resolver: zodResolver(formSchema),
     defaultValues: {
       dishName: ell.foodName,
@@ -94,14 +108,26 @@ export const Cart = ({ ell, mapData, ele }: propsType) => {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await api.put(`/foods/${ell.foodId}`, {
-      name: values.dishName,
-      price: values.price,
-      ingredients: values.ingre,
-      image: values.image,
-      categoryId: values.dishCata,
-    });
-    toast("Food is being updated to the backend!", { position: "top-center" });
+    try {
+      await api.put(`/foods/${ell.foodId}`, {
+        name: values.dishName,
+        price: values.price,
+        ingredients: values.ingre,
+        image: values.image ?? "",
+        categoryId: normalizeCategoryId(values.dishCata),
+      });
+      await onFoodsChange();
+      toast("Food is being updated to the backend!", {
+        position: "top-center",
+      });
+    } catch (error) {
+      const message =
+        axios.isAxiosError<{ message?: string }>(error) &&
+        error.response?.data?.message
+          ? error.response.data.message
+          : "Failed to update food";
+      toast.error(message, { position: "top-center" });
+    }
   }
   return (
     <div className="relative ">
@@ -127,6 +153,7 @@ export const Cart = ({ ell, mapData, ele }: propsType) => {
               <DialogClose asChild>
                 <Button size="icon" variant="outline" className="rounded-full">
                   {" "}
+                  {" "}
                   <X className="text-black" />
                 </Button>
               </DialogClose>
@@ -144,6 +171,7 @@ export const Cart = ({ ell, mapData, ele }: propsType) => {
                       <FormLabel> Dish name</FormLabel>
                       <FormControl>
                         <Input
+                          type="number"
                           className="w-[60%]"
                           defaultValue={ell.foodName}
                           {...field}
@@ -161,7 +189,7 @@ export const Cart = ({ ell, mapData, ele }: propsType) => {
                       <FormLabel>Dish category</FormLabel>
                       <FormControl>
                         <Select
-                          value={field.value}
+                          value={field.value ?? "uncategorized"}
                           onValueChange={field.onChange}
                           defaultValue={`${ele.id}`}
                         >
@@ -205,7 +233,19 @@ export const Cart = ({ ell, mapData, ele }: propsType) => {
                     <FormItem className="w-full flex justify-between">
                       <FormLabel> Price</FormLabel>
                       <FormControl>
-                        <Input className="w-[60%]" {...field} />
+                        <Input
+                          type="number"
+                          className="w-[60%]"
+                          value={
+                            typeof field.value === "number" ? field.value : ""
+                          }
+                          onChange={(event) =>
+                            field.onChange(event.target.valueAsNumber)
+                          }
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -236,9 +276,11 @@ export const Cart = ({ ell, mapData, ele }: propsType) => {
                           />
                           <Button
                             size="icon"
+                            type="button"
                             variant={"outline"}
                             onClick={() => {
-                              (handleRemove(), field.onChange(null));
+                              handleRemove();
+                              field.onChange(null);
                             }}
                             className="absolute top-1 right-2 rounded-full "
                           >
@@ -270,18 +312,31 @@ export const Cart = ({ ell, mapData, ele }: propsType) => {
                       variant={"outline"}
                       className="border-red-500"
                       onClick={async () => {
-                        await api.delete("/foods", {
-                          data: { name: ell.foodName },
-                        });
+                        try {
+                          await api.delete("/foods", {
+                            data: { id: ell.foodId },
+                          });
+                          await onFoodsChange();
+                          toast("Food deleted successfully", {
+                            position: "top-center",
+                          });
+                        } catch (error) {
+                          const message =
+                            axios.isAxiosError<{ message?: string }>(error) &&
+                            error.response?.data?.message
+                              ? error.response.data.message
+                              : "Failed to delete food";
+                          toast.error(message, {
+                            position: "top-center",
+                          });
+                        }
                       }}
                     >
                       {" "}
                       <Trash className="text-red-500" />
                     </Button>
                   </DialogClose>
-                  <DialogClose asChild>
-                    <Button type="submit">Save changes</Button>
-                  </DialogClose>
+                  <Button type="submit">Save changes</Button>
                 </div>
               </form>
             </Form>

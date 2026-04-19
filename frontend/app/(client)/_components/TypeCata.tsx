@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { Food } from "../context/cart-context";
 import { FoodCart } from "./FoodCart";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { api } from "@/lib/axios";
 import { foodType } from "./CartInfo";
 
@@ -13,40 +13,27 @@ type Params = {
 
 export const TypeCata = () => {
   const params = useParams<Params>();
-  const slug = params.ele;
-
-  if (!slug) return null;
-
-  console.log(slug);
+  const slug = params.ele ?? "";
   const [foods, setFoods] = useState<Food[]>([]);
-  const [orderInfo, setOrder] = useState<foodType[]>([]);
 
   useEffect(() => {
-    const getData = async () => {
-      const { data } = await api.get("/foods", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      });
+    void (async () => {
+      const { data } = await api.get<Food[]>("/foods");
       setFoods(data);
-    };
-
-    getData();
+    })();
   }, []);
 
-  useEffect(() => {
-    if (foods.length > 0) {
-      setOrder(
-        foods.map((food) => ({
-          ...food,
-          quantity: 1,
-        })),
-      );
-    }
+  const orderInfo = useMemo<foodType[]>(() => {
+    return foods.map((food) => ({
+      ...food,
+      quantity: 1,
+    }));
   }, [foods]);
 
   const a = decodeURIComponent(slug);
-  const filtered = orderInfo.filter((ele) => ele.categoryId.name == a);
+  const filtered = orderInfo.filter((ele) => ele.categoryId?.name === a);
+
+  if (!slug) return null;
 
   return (
     <>
@@ -58,7 +45,6 @@ export const TypeCata = () => {
               <FoodCart
                 key={ele._id}
                 id={ele._id}
-                setOrder={setOrder}
                 orderInfo={orderInfo}
               />
             );
