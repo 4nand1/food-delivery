@@ -45,7 +45,7 @@ export const HeaderMain = () => {
   return (
     <div className="w-screen h-17 bg-[#18181B] flex px-22 items-center justify-between fixed top-0 right-0 left-0 z-2">
       <div className="flex gap-3">
-        <img src="../logo.png" height={"37px"} width={"46px"} />{" "}
+        <img src="../Logo.png" height={"37px"} width={"46px"} />{" "}
         <div>
           <h1 className="font-semibold text-5 text-white">
             Nom<span className="text-[#EF4444]">Nom</span>
